@@ -1,0 +1,182 @@
+package com.example.qnr.services;
+
+import com.example.qnr.dao.OrderRepository;
+import com.example.qnr.dto.OrderDto;
+import com.example.qnr.exception.NotFoundException;
+import com.example.qnr.mappers.OrderMapper;
+import com.example.qnr.resources.Order;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import java.time.LocalDateTime;
+import java.util.Arrays;
+import java.util.List;
+import java.util.Optional;
+
+import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
+@ExtendWith(MockitoExtension.class)
+public class OrderServiceImplTest {
+
+    @Mock
+    private OrderRepository orderRepository;
+
+    private OrderServiceImpl orderService;
+
+    @Mock
+    private OrderMapper orderMapper;
+
+    @BeforeEach
+    void setUp() {
+        orderService = new OrderServiceImpl(orderRepository, orderMapper);
+    }
+
+    @Test
+    void getAllOrders_ShouldReturnOrder() {
+        Order order1 = new Order(1, "Order 1", "PENDING", LocalDateTime.of(2024, 3, 17, 12, 0));
+        Order order2 = new Order(2, "Order 2", "COMPLETED", LocalDateTime.of(2024, 3, 16, 10, 30));
+        OrderDto orderDto1 = new OrderDto("Order 1", "PENDING", LocalDateTime.of(2024, 3, 17, 12, 0));
+        OrderDto orderDto2 = new OrderDto("Order 2", "COMPLETED", LocalDateTime.of(2024, 3, 16, 10, 30));
+
+        when(orderRepository.findAll()).thenReturn(Arrays.asList(order1, order2));
+        when(orderMapper.toOrderDto(order1)).thenReturn(orderDto1);
+        when(orderMapper.toOrderDto(order2)).thenReturn(orderDto2);
+
+        List<OrderDto> result = orderService.getAllOrders();
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getDescription()).isEqualTo("Order 1");
+        assertThat(result.get(0).getStatus()).isEqualTo("PENDING");
+        assertThat(result.get(1).getDescription()).isEqualTo("Order 2");
+        assertThat(result.get(1).getStatus()).isEqualTo("COMPLETED");
+
+        verify(orderRepository).findAll();
+        verify(orderMapper).toOrderDto(order1);
+        verify(orderMapper).toOrderDto(order2);
+    }
+
+    @Test
+    void getOrdersByStatus_ShouldReturnListOfOrders_WhenOrdersExist() throws NotFoundException {
+        String status = "PENDING";
+        Order order1 = new Order(1, "Order 1", "PENDING", LocalDateTime.of(2024, 3, 17, 12, 0));
+        Order order2 = new Order(2, "Order 2", "PENDING", LocalDateTime.of(2024, 3, 16, 10, 30));
+        OrderDto orderDto1 = new OrderDto("Order 1", "PENDING", LocalDateTime.of(2024, 3, 17, 12, 0));
+        OrderDto orderDto2 = new OrderDto("Order 2", "PENDING", LocalDateTime.of(2024, 3, 16, 10, 30));
+
+        when(orderRepository.findOrdersByStatusSorted(status)).thenReturn(Optional.of(Arrays.asList(order1, order2)));
+        when(orderMapper.toOrderDto(order1)).thenReturn(orderDto1);
+        when(orderMapper.toOrderDto(order2)).thenReturn(orderDto2);
+
+        List<OrderDto> result = orderService.getOrdersByStatus(status);
+
+        assertThat(result).hasSize(2);
+        assertThat(result.get(0).getDescription()).isEqualTo("Order 1");
+        assertThat(result.get(0).getStatus()).isEqualTo("PENDING");
+        assertThat(result.get(1).getDescription()).isEqualTo("Order 2");
+        assertThat(result.get(1).getStatus()).isEqualTo("PENDING");
+
+        verify(orderRepository).findOrdersByStatusSorted(status);
+        verify(orderMapper).toOrderDto(order1);
+        verify(orderMapper).toOrderDto(order2);
+    }
+
+    @Test
+    void getOrdersByStatus_ShouldThrowNotFoundException_WhenNoOrdersExist() {
+        String status = "COMPLETED";
+        when(orderRepository.findOrdersByStatusSorted(status)).thenReturn(Optional.empty());
+
+        assertThatThrownBy(() -> orderService.getOrdersByStatus(status))
+                .isInstanceOf(NotFoundException.class)
+                .hasMessage("No orders found with status: COMPLETED");
+
+        verify(orderRepository).findOrdersByStatusSorted(status); // Ensure method was called
+    }
+
+    @Test
+    void updateOrder_ShouldUpdateExistingOrder_WhenOrderExists() {
+        Integer orderId = 1;
+        OrderDto orderDto = new OrderDto("Updated Order", "SHIPPED", LocalDateTime.of(2024, 3, 17, 14, 0));
+        Order existingOrder = new Order(orderId, "Old Order", "PENDING", LocalDateTime.of(2024, 3, 16, 10, 30));
+        Order updatedOrder = new Order(orderId, "Updated Order", "SHIPPED", LocalDateTime.of(2024, 3, 17, 14, 0));
+        OrderDto updatedOrderDto = new OrderDto("Updated Order", "SHIPPED", LocalDateTime.of(2024, 3, 17, 14, 0));
+
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(existingOrder));
+        when(orderRepository.save(existingOrder)).thenReturn(updatedOrder);
+        when(orderMapper.toOrderDto(any(Order.class))).thenReturn(updatedOrderDto);
+
+        OrderDto result = orderService.updateOrder(orderDto, orderId);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getDescription()).isEqualTo("Updated Order");
+        assertThat(result.getStatus()).isEqualTo("SHIPPED");
+
+        verify(orderRepository).findById(orderId);
+        verify(orderRepository).save(existingOrder);
+        verify(orderMapper).toOrderDto(updatedOrder);
+    }
+
+
+    @Test
+    void insertNewOrder_ShouldInsertOrderAndReturnOrderDto() {
+        OrderDto orderDto = new OrderDto("New Order", "PENDING", LocalDateTime.of(2025, 3, 17, 10, 0));
+        Order order = new Order(null, "New Order", "PENDING", LocalDateTime.of(2025, 3, 17, 10, 0));
+        Order savedOrder = new Order(1, "New Order", "PENDING", LocalDateTime.of(2025, 3, 17, 10, 0));
+        OrderDto savedOrderDto = new OrderDto("New Order", "PENDING", LocalDateTime.of(2025, 3, 17, 10, 0));
+
+        when(orderMapper.toOrder(orderDto)).thenReturn(order);
+        when(orderMapper.toOrderDto(savedOrder)).thenReturn(savedOrderDto);
+        when(orderRepository.save(order)).thenReturn(savedOrder);
+
+        OrderDto result = orderService.insertNewOrder(orderDto);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getDescription()).isEqualTo("New Order");
+        assertThat(result.getStatus()).isEqualTo("PENDING");
+
+        verify(orderRepository).save(order);
+    }
+
+    @Test
+    void deleteOrder_ShouldReturnTrue_WhenOrderExists() {
+        Integer orderId = 1;
+        Order order = new Order(orderId, "Test Order", "PENDING", null);
+        when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
+
+        boolean result = orderService.deleteOrder(orderId);
+
+        assertThat(result).isTrue();
+        verify(orderRepository).findById(orderId);
+        verify(orderRepository).delete(order);
+    }
+
+    @Test
+    void deleteOrder_ShouldReturnFalse_WhenOrderDoesNotExist() {
+        Integer orderId = 1;
+        when(orderRepository.findById(orderId)).thenReturn(Optional.empty());
+
+        boolean result = orderService.deleteOrder(orderId);
+
+        assertThat(result).isFalse();
+        verify(orderRepository).findById(orderId);
+    }
+
+    @Test
+    void bulkDeleteOrdersByStatus_ShouldReturnNumberOfDeletedOrders() {
+        String status = "CANCELLED";
+        int deletedCount = 5;
+        when(orderRepository.deleteOrdersByStatus(status)).thenReturn(deletedCount);
+
+        int result = orderService.bulkDeleteOrdersByStatus(status);
+
+        assertThat(result).isEqualTo(deletedCount);
+        verify(orderRepository).deleteOrdersByStatus(status);
+    }
+
+}
