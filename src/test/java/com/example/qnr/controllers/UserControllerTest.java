@@ -1,6 +1,7 @@
 package com.example.qnr.controllers;
 
 import com.example.qnr.dto.UserDto;
+import com.example.qnr.dto.UserDtoNoPass;
 import com.example.qnr.exception.GlobalExceptionHandler;
 import com.example.qnr.exception.NotFoundException;
 import com.example.qnr.resources.enums.UserRole;
@@ -20,7 +21,7 @@ import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
-import java.util.ArrayList;
+import java.util.List;
 
 import static org.mockito.Mockito.when;
 
@@ -63,7 +64,13 @@ class UserControllerTest {
 
     @Test
     void testGetAllUsers() throws Exception {
-        when(userServiceImpl.getAllUsers()).thenReturn(new ArrayList<>());
+        List<UserDtoNoPass> mockUserDtos = List.of(
+                new UserDtoNoPass("john_doe", UserRole.ADMIN),
+                new UserDtoNoPass("jane_smith", UserRole.USER),
+                new UserDtoNoPass("guest_user", UserRole.MANAGER)
+        );
+
+        when(userServiceImpl.getAllUsers()).thenReturn(mockUserDtos);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/v1.0/user/all");
 
         MockMvcBuilders.standaloneSetup(userController)
@@ -72,7 +79,12 @@ class UserControllerTest {
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("[]"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].username").value("john_doe"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].username").value("jane_smith"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].username").value("guest_user"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].role").value(UserRole.ADMIN.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].role").value(UserRole.USER.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[2].role").value(UserRole.MANAGER.toString()));
     }
 
     @Test
@@ -110,9 +122,13 @@ class UserControllerTest {
 
     @Test
     void testGetUsersByRole_thenStatusIsOk() throws Exception {
-        when(userServiceImpl.getByUserRole(Mockito.any())).thenReturn(new ArrayList<>());
-        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/v1.0/user/{user_role}",
-                "User role");
+        List<UserDtoNoPass> mockUserDtos = List.of(
+                new UserDtoNoPass("john_doe", UserRole.ADMIN),
+                new UserDtoNoPass("jane_smith", UserRole.USER)
+        );
+
+        when(userServiceImpl.getByUserRole("User role")).thenReturn(mockUserDtos);
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/v1.0/user/{user_role}", "User role");
 
         MockMvcBuilders.standaloneSetup(userController)
                 .setControllerAdvice(globalExceptionHandler)
@@ -120,6 +136,9 @@ class UserControllerTest {
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
-                .andExpect(MockMvcResultMatchers.content().string("[]"));
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].username").value("john_doe"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].username").value("jane_smith"))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[0].role").value(UserRole.ADMIN.toString()))
+                .andExpect(MockMvcResultMatchers.jsonPath("$[1].role").value(UserRole.USER.toString()));
     }
 }
