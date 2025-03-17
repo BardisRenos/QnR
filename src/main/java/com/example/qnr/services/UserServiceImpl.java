@@ -2,6 +2,7 @@ package com.example.qnr.services;
 
 import com.example.qnr.dao.UserRepository;
 import com.example.qnr.dto.UserDto;
+import com.example.qnr.dto.UserDtoNoPass;
 import com.example.qnr.exception.NotFoundException;
 import com.example.qnr.mappers.UserMapper;
 import com.example.qnr.security.JwtUtil;
@@ -27,30 +28,31 @@ public class UserServiceImpl implements UserService {
     private final UserRepository userRepository;
     private final AuthenticationManager authenticationManager;
     private final JwtUtil jwtUtil;
+    private final UserMapper userMapper;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder(10);
 
     @Override
-    public List<UserDto> getAllUsers() {
+    public List<UserDtoNoPass> getAllUsers() {
         return userRepository.findAll()
                 .stream()
-                .map(UserMapper::toOrderDto)
+                .map(userMapper::toUserDtoNoPass)
                 .collect(Collectors.toList());
     }
 
     @Override
-    @Cacheable(value = "orders", key = "#role")
-    public List<UserDto> getByUserRole(String role) throws NotFoundException {
+    @Cacheable(value = "users", key = "#role")
+    public List<UserDtoNoPass> getByUserRole(String role) throws NotFoundException {
         return userRepository.findByRole(role)
-                .orElseThrow(()-> new NotFoundException("No user found with role: "+ role))
+                .orElseThrow(() -> new NotFoundException("No user found with role: " + role))
                 .stream()
-                .map(UserMapper::toOrderDto)
+                .map(userMapper::toUserDtoNoPass)
                 .collect(Collectors.toList());
     }
 
     @Override
     public UserDto insertUser(UserDto userDto) {
         userDto.setPassword(passwordEncoder.encode(userDto.getPassword()));
-        return UserMapper.toOrderDto(userRepository.save(UserMapper.toOrders(userDto)));
+        return userMapper.toUserDto(userRepository.save(userMapper.toUsers(userDto)));
     }
 
     @Override

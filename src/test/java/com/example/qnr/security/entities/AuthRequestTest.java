@@ -4,18 +4,18 @@ import org.junit.jupiter.api.Test;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
-class AuthRequestDiffblueTest {
+class AuthRequestTest {
 
     @Test
     void testGettersAndSetters() {
-        AuthRequest actualAuthRequest = new AuthRequest("janedoe", "iloveyou");
-        actualAuthRequest.setPassword("iloveyou");
+        AuthRequest actualAuthRequest = new AuthRequest("janedoe", "pass_1233");
+        actualAuthRequest.setPassword("pass_1233");
         actualAuthRequest.setUsername("janedoe");
         String actualToStringResult = actualAuthRequest.toString();
         String actualPassword = actualAuthRequest.getPassword();
 
-        assertEquals("AuthRequest(username=janedoe, password=iloveyou)", actualToStringResult);
-        assertEquals("iloveyou", actualPassword);
+        assertEquals("AuthRequest(username=janedoe, password=pass_1233)", actualToStringResult);
+        assertEquals("pass_1233", actualPassword);
         assertEquals("janedoe", actualAuthRequest.getUsername());
     }
 }

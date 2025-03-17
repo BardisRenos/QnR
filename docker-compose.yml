@@ -35,7 +35,7 @@ services:
       - REDIS_HOST=redis-cache
       - REDIS_PORT=6379
       - REDIS_PASSWORD=renos1987
-    command: ["./wait-for-it.sh", "postgres:5432", "--", "./wait-for-it.sh", "redis-cache:6379", "--", "java", "-jar", "/app/app.jar"]
+    command: ["./wait-for-it.sh", "postgres:5432", "--", "./wait-for-it.sh", "redis-cache:6379", "--", "java", "-jar", "/spring-boot-docker.jar"]
     networks:
       - springboot-net
 

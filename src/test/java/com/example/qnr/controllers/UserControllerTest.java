@@ -40,12 +40,12 @@ class UserControllerTest {
     @Test
     void testAddUser() throws Exception {
         when(userServiceImpl.insertUser(Mockito.any()))
-                .thenReturn(new UserDto("janedoe", UserRole.ADMIN, "iloveyou"));
+                .thenReturn(new UserDto("jane_doe", UserRole.ADMIN, "pass_123"));
 
         UserDto userDto = new UserDto();
-        userDto.setPassword("iloveyou");
+        userDto.setPassword("pass_123");
         userDto.setRole(UserRole.ADMIN);
-        userDto.setUsername("janedoe");
+        userDto.setUsername("jane_doe");
         String content = (new ObjectMapper()).writeValueAsString(userDto);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/v1.0/user/register")
                 .contentType(MediaType.APPLICATION_JSON)
@@ -58,7 +58,7 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
                 .andExpect(MockMvcResultMatchers.content()
-                        .string("{\"username\":\"janedoe\",\"role\":\"ADMIN\",\"password\":\"iloveyou\"}"));
+                        .string("{\"username\":\"jane_doe\",\"role\":\"ADMIN\",\"password\":\"pass_123\"}"));
     }
 
     @Test
@@ -78,7 +78,7 @@ class UserControllerTest {
     @Test
     void testLogin() throws Exception {
         when(userServiceImpl.verify(Mockito.any())).thenReturn(new AuthResponse("ABC123"));
-        AuthRequest authRequest = new AuthRequest("iloveyou", "janedoe");
+        AuthRequest authRequest = new AuthRequest("pass_123", "janedoe");
         String content = (new ObjectMapper()).writeValueAsString(authRequest);
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/v1.0/user/login")
                 .contentType(MediaType.APPLICATION_JSON)

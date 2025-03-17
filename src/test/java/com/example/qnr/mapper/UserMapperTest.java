@@ -18,7 +18,8 @@ class UserMapperTest {
     void toOrderDto_ShouldMapUserToUserDto() {
         Users user = new Users(1, "john_doe", "ADMIN", "encodedPassword");
 
-        UserDto userDto = UserMapper.toOrderDto(user);
+        UserMapper userMapper = new UserMapper();
+        UserDto userDto = userMapper.toUserDto(user);
 
         assertThat(userDto).isNotNull();
         assertThat(userDto.getUsername()).isEqualTo("john_doe");
@@ -30,7 +31,8 @@ class UserMapperTest {
     void toOrders_ShouldMapUserDtoToUser() {
         UserDto userDto = new UserDto("john_doe", UserRole.ADMIN,"encodedPassword");
 
-        Users user = UserMapper.toOrders(userDto);
+        UserMapper userMapper = new UserMapper();
+        Users user = userMapper.toUsers(userDto);
 
         assertThat(user).isNotNull();
         assertThat(user.getUsername()).isEqualTo("john_doe");

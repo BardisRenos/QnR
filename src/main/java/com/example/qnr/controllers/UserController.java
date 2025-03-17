@@ -1,6 +1,7 @@
 package com.example.qnr.controllers;
 
 import com.example.qnr.dto.UserDto;
+import com.example.qnr.dto.UserDtoNoPass;
 import com.example.qnr.exception.NotFoundException;
 import com.example.qnr.security.entities.AuthRequest;
 import com.example.qnr.security.entities.AuthResponse;
@@ -20,17 +21,17 @@ public class UserController {
     private final UserServiceImpl userService;
 
     @GetMapping("/all")
-    public ResponseEntity<List<UserDto>> getAllUsers() {
+    public ResponseEntity<List<UserDtoNoPass>> getAllUsers() {
         return new ResponseEntity<>(userService.getAllUsers(), HttpStatus.OK);
     }
 
     @GetMapping("/{user_role}")
-    public ResponseEntity<List<UserDto>> getUsersByRole(@PathVariable("user_role") String role) throws NotFoundException {
+    public ResponseEntity<List<UserDtoNoPass>> getUsersByRole(@PathVariable("user_role") String role) throws NotFoundException {
         return new ResponseEntity<>(userService.getByUserRole(role), HttpStatus.OK);
     }
 
     @PostMapping("/register")
-    public ResponseEntity<UserDto> addUser(@RequestBody UserDto userDto) {
+    public ResponseEntity<UserDtoNoPass> addUser(@RequestBody UserDto userDto) {
         return new ResponseEntity<>(userService.insertUser(userDto), HttpStatus.CREATED);
     }
 

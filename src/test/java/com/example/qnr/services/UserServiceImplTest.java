@@ -2,6 +2,7 @@ package com.example.qnr.services;
 
 import com.example.qnr.dao.UserRepository;
 import com.example.qnr.dto.UserDto;
+import com.example.qnr.dto.UserDtoNoPass;
 import com.example.qnr.exception.NotFoundException;
 import com.example.qnr.mappers.UserMapper;
 import com.example.qnr.resources.Users;
@@ -73,14 +74,24 @@ public class UserServiceImplTest {
         );
 
         when(userRepository.findAll()).thenReturn(mockUsers);
-        List<UserDto> users = userService.getAllUsers();
+
+        when(userMapper.toUserDtoNoPass(any(Users.class))).thenAnswer(invocation -> {
+            Users user = invocation.getArgument(0);
+            return new UserDtoNoPass(user.getUsername(), UserRole.valueOf(user.getRole()));
+        });
+        List<UserDtoNoPass> users = userService.getAllUsers();
 
         assertNotNull(users);
         assertEquals(3, users.size());
         assertEquals("john_doe", users.get(0).getUsername());
         assertEquals("jane_smith", users.get(1).getUsername());
+        assertEquals("guest_user", users.get(2).getUsername());
+        assertEquals(UserRole.ADMIN, users.get(0).getRole());
+        assertEquals(UserRole.USER, users.get(1).getRole());
 
         verify(userRepository, times(1)).findAll();
+
+        verify(userMapper, times(3)).toUserDtoNoPass(any(Users.class));
     }
 
     @Test
@@ -89,20 +100,28 @@ public class UserServiceImplTest {
                 new Users(1, "john_doe", UserRole.ADMIN.toString(), "password123"));
 
         when(userRepository.findByRole("ADMIN")).thenReturn(Optional.of(mockUsers));
-        List<UserDto> users = userService.getByUserRole("ADMIN");
+        when(userMapper.toUserDtoNoPass(any(Users.class))).thenAnswer(invocation -> {
+            Users user = invocation.getArgument(0);
+            return new UserDtoNoPass(user.getUsername(), UserRole.valueOf(user.getRole()));
+        });
+
+        List<UserDtoNoPass> users = userService.getByUserRole("ADMIN");
 
         assertNotNull(users);
         assertEquals(1, users.size());
         assertEquals("john_doe", users.get(0).getUsername());
+        assertEquals(UserRole.ADMIN, users.get(0).getRole());
 
         verify(userRepository, times(1)).findByRole("ADMIN");
+        verify(userMapper, times(1)).toUserDtoNoPass(any(Users.class)); // Verify the correct mapper method
     }
+
 
     @Test
     void testInsertUser() {
         try (MockedStatic<UserMapper> mockedMapper = mockStatic(UserMapper.class)) {
-            mockedMapper.when(() -> UserMapper.toOrders(inputUserDto)).thenReturn(savedUser);
-            mockedMapper.when(() -> UserMapper.toOrderDto(savedUser)).thenReturn(returnedUserDto);
+            mockedMapper.when(() -> userMapper.toUsers(inputUserDto)).thenReturn(savedUser);
+            mockedMapper.when(() -> userMapper.toUserDto(savedUser)).thenReturn(returnedUserDto);
 
             UserDto result = userService.insertUser(inputUserDto);
 
