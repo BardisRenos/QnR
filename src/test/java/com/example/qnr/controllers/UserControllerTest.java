@@ -22,8 +22,7 @@ import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 
 import java.util.List;
-
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ContextConfiguration(classes = {UserController.class, GlobalExceptionHandler.class})
 @WebMvcTest(controllers = UserController.class)
@@ -57,7 +56,7 @@ class UserControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.content()
                         .string("{\"username\":\"jane_doe\",\"role\":\"ADMIN\",\"password\":\"pass_123\"}"));
     }
@@ -101,7 +100,7 @@ class UserControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.content().string("{\"token\":\"ABC123\"}"));
     }
 
@@ -135,10 +134,11 @@ class UserControllerTest {
                 .build()
                 .perform(requestBuilder)
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.content().contentType("application/json"))
+                .andExpect(MockMvcResultMatchers.content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].username").value("john_doe"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].username").value("jane_smith"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].role").value(UserRole.ADMIN.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].role").value(UserRole.USER.toString()));
     }
+
 }

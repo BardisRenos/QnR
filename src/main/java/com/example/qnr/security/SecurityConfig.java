@@ -1,5 +1,6 @@
 package com.example.qnr.security;
 
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -32,16 +33,31 @@ public class SecurityConfig {
         http
                 .csrf(AbstractHttpConfigurer::disable)
                 .authorizeHttpRequests(auth -> auth
-                .requestMatchers("/api/v1.0/user/register", "/api/v1.0/user/login", "/swagger-ui/index.html").permitAll()
-                .anyRequest().authenticated())
+                        .requestMatchers(
+                                "/api/v1.0/user/register",
+                                "/api/v1.0/user/login",
+                                "/api/v1.0/user/logout",
+                                "/swagger-ui/index.html"
+                        ).permitAll()
+                        .anyRequest().authenticated())
                 .httpBasic(Customizer.withDefaults())
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
-                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class);
+                .addFilterBefore(jwtFilter, UsernamePasswordAuthenticationFilter.class)
+                .logout(logout -> logout
+                        .logoutUrl("/api/v1.0/user/logout")
+                        .logoutSuccessHandler((request, response, authentication) -> {
+                            response.setStatus(HttpServletResponse.SC_OK);
+                            response.getWriter().write("Logged out successfully");
+                            response.getWriter().flush();
+                        })
+                        .invalidateHttpSession(true)
+                        .clearAuthentication(true)
+                        .deleteCookies("JSESSIONID"));
+
 
         return http.build();
     }
-
 
     @Bean
     public AuthenticationProvider authenticationProvider() {

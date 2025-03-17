@@ -5,6 +5,7 @@ import com.example.qnr.dto.UserDtoNoPass;
 import com.example.qnr.exception.NotFoundException;
 import com.example.qnr.security.entities.AuthRequest;
 import com.example.qnr.security.entities.AuthResponse;
+import com.example.qnr.services.CustomUserDetailsService;
 import com.example.qnr.services.UserServiceImpl;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
@@ -19,6 +20,7 @@ import java.util.List;
 public class UserController {
 
     private final UserServiceImpl userService;
+    private final CustomUserDetailsService userDetailsService;
 
     @GetMapping("/all")
     public ResponseEntity<List<UserDtoNoPass>> getAllUsers() {
@@ -38,5 +40,17 @@ public class UserController {
     @PostMapping("/login")
     public AuthResponse login(@RequestBody AuthRequest authRequest) {
         return userService.verify(authRequest);
+    }
+
+    @PostMapping("/logout")
+    public ResponseEntity<String> logout(@RequestHeader("Authorization") String authHeader) {
+        if (authHeader == null || !authHeader.startsWith("Bearer ")) {
+            return ResponseEntity.status(HttpStatus.BAD_REQUEST).body("Invalid token");
+        }
+
+        String token = authHeader.substring(7);
+        userDetailsService.blacklistToken(token);
+
+        return ResponseEntity.ok("Logged out successfully");
     }
 }

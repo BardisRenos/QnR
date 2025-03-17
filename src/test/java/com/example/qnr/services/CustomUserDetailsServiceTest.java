@@ -13,6 +13,8 @@ import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertFalse;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
@@ -48,5 +50,27 @@ class CustomUserDetailsServiceTest {
                 .isInstanceOf(UsernameNotFoundException.class)
                 .hasMessage("User not found");
         verify(userRepository).findByUsername(username);
+    }
+
+    @Test
+    void testBlacklistToken() {
+        String token = "sampleToken123";
+
+        assertFalse(customUserDetailsService.isTokenBlacklisted(token));
+
+        customUserDetailsService.blacklistToken(token);
+
+        assertTrue(customUserDetailsService.isTokenBlacklisted(token));
+    }
+
+    @Test
+    void testIsTokenBlacklisted() {
+        String token1 = "blacklistedToken";
+        String token2 = "nonBlacklistedToken";
+
+        customUserDetailsService.blacklistToken(token1);
+
+        assertTrue(customUserDetailsService.isTokenBlacklisted(token1));
+        assertFalse(customUserDetailsService.isTokenBlacklisted(token2));
     }
 }
