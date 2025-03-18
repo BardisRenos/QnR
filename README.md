@@ -7,11 +7,11 @@
 - **Spring Boot 3.4.3**
 - **Spring Data JPA**
 - **Spring Security 6**
-- **PostgreSQL**
+- **PostgresSQL**
 - **Docker** for containerization
 - **Redis** for caching
 - **JUnit** for Unit Testing
-- **Testcontainers** for Integration Testing
+- **Test containers** for Integration Testing
 - **Maven** for build management
 - **Lombok** for reducing boilerplate code
 - **Swagger UI** for API documentation
@@ -21,7 +21,7 @@
 ## Design Overview
 
 This project is designed to provide a simple yet robust API that integrates Spring Boot, Spring Security, PostgreSQL, Redis, and Docker for containerization and caching. The application ensures proper validation, security with JWT, and the use of Docker for efficient testing and deployment.
-The structure is layers like the the **Controller layer** which manage the Rest application end point. After there is the **Service layer** which is the business layer and finally the **DAO layer** which is responsible for the data access layer of the application.
+The structure is layers like the **Controller layer** which manage the Rest application end point. After there is the **Service layer** which is the business layer and finally the **DAO layer** which is responsible for the data access layer of the application.
 
 <p align="center"> 
 <img src="https://github.com/BardisRenos/QnR/blob/main/images/Architecture.png" width="750" height="450" style=centerme>
@@ -137,29 +137,40 @@ This will allow you to observe real-time data caching in Redis.
 
 API endpoints are available in the **endpoints** folder, along with a Postman collection. The collection also includes environment variables for both local and Docker-based setups:
 
+There are 7 end points for the Order and 5 end point for the Users.
+
+The local url is saved as {{url}} and the docker url is saved as {{docker_url}}. Just is needed to choose in Postman 
+from the top right the Environments drop down list.
 - **Local URL:** `http://localhost:8088`
 - **Docker URL:** `http://localhost:9088`
 
-There are 
+---
+### 7. Advanced Query with filter and Pagination
+The custom query retrieves Order entities with filtering and pagination support.
+It allows filtering by status and create date, and supports pagination.
+If no pagination parameters are provided, it defaults to page 0 and page size 10.
+
 ---
 
-### 7. Validations
+### 8. Validations
 
 The system ensures that the `OrderDto` and `UserDtoNoPass` are **NotBlank**. These validations are enforced to maintain data integrity within the application.
 
 ---
 
-### 8. Security
+### 9. Security
 
-The application leverages **Spring Security** with **JWT** (JSON Web Tokens) for user authentication and authorization:
+The application leverages **Spring Security** with **JWT** (JSON Web Tokens) for user authentication and authorization.
+Also, another worth mentioning the application register a new **User** then the password is saved into the users database table in BCryptPasswordEncoder with 10 rounds of encryption.
 
 1. Users are authenticated by checking their credentials in the database.
 2. After successful authentication, a JWT token is returned.
 3. This token is used for subsequent requests to authenticate API calls.
+4. The given token is applied into the Authorization option in Postman by choosing the Type as Bearer Token option.
 
 ---
 
-### 9. Swagger UI
+### 10. Swagger UI
 
 To view and interact with the API endpoints, the application provides a **Swagger UI** interface. Visit the following URL:
 
@@ -171,8 +182,8 @@ This interface allows you to test all available endpoints with ease.
 
 ---
 
-### 10. Unit & Integration Tests
+### 11. Unit & Integration Tests
 
-The application includes both **unit tests** for individual methods and **integration tests** for testing the complete system. It uses **Docker containers** for integration testing, ensuring that all components (e.g., PostgreSQL, Redis) are properly tested in isolation and together as part of the integration process.
+The application includes both **unit tests** for individual methods and **integration tests** for testing the complete system. It uses **Docker containers** for integration testing, ensuring that all components are properly tested in isolation and together as part of the integration process.
 
 ---

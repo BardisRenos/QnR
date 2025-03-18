@@ -100,9 +100,9 @@ public class OrderController {
     /**
      * Endpoint to retrieve filtered and paginated orders.
      *
-     * @param status    The status to filter orders by (can be null to ignore).
-     * @param startDate The start date to filter orders (can be null to ignore).
-     * @param endDate   The end date to filter orders (can be null to ignore).
+     * @param status    The status to filter orders.
+     * @param startDate The start date to filter orders.
+     * @param endDate   The end date to filter orders.
      * @param page      The page number (starting from 0).
      * @param size      The page size.
      * @return A paginated list of orders matching the filters.
