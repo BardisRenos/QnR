@@ -3,11 +3,13 @@ package com.example.qnr.controllers;
 import com.example.qnr.dto.OrderDto;
 import com.example.qnr.exception.NotFoundException;
 import com.example.qnr.services.OrderServiceImpl;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import jakarta.validation.Valid;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -92,5 +94,26 @@ public class OrderController {
     public ResponseEntity<String> bulkDeleteOrders(@PathVariable String status) {
         int deletedCount = orderService.bulkDeleteOrdersByStatus(status);
         return ResponseEntity.ok(deletedCount + " orders deleted successfully.");
+    }
+
+
+    /**
+     * Endpoint to retrieve filtered and paginated orders.
+     *
+     * @param status    The status to filter orders by (can be null to ignore).
+     * @param startDate The start date to filter orders (can be null to ignore).
+     * @param endDate   The end date to filter orders (can be null to ignore).
+     * @param page      The page number (starting from 0).
+     * @param size      The page size.
+     * @return A paginated list of orders matching the filters.
+     */
+    @GetMapping("/orders")
+    public Page<OrderDto> getOrders(
+            @RequestParam(required = false) String status,
+            @RequestParam(required = false) LocalDateTime startDate,
+            @RequestParam(required = false) LocalDateTime endDate,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+        return orderService.getFilteredOrders(status, startDate, endDate, page, size);
     }
 }
