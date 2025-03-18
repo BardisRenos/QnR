@@ -21,6 +21,11 @@
 ## Design Overview
 
 This project is designed to provide a simple yet robust API that integrates Spring Boot, Spring Security, PostgreSQL, Redis, and Docker for containerization and caching. The application ensures proper validation, security with JWT, and the use of Docker for efficient testing and deployment.
+The structure is layers like the the **Controller layer** which manage the Rest application end point. After there is the **Service layer** which is the business layer and finally the **DAO layer** which is responsible for the data access layer of the application.
+
+<p align="center"> 
+<img src="https://github.com/BardisRenos/QnR/blob/main/images/Architecture.png" width="750" height="450" style=centerme>
+</p>
 
 ---
 
@@ -45,7 +50,7 @@ After the Docker container is up, connect to the PostgreSQL database by running:
 ```bash
 docker exec -it postgres psql -U postgres -d mydatabase
 ```
-To check the databases the type :
+To check the databases need to type :
 ```
 \l
 ```
@@ -53,7 +58,7 @@ To connect with the database
 ```
 \c
 ```
-Finally, to see the db tables then 
+Finally, to see the db tables then type:
 ```
 \dt
 ```
@@ -61,8 +66,7 @@ Finally, to see the db tables then
 #### Step 3: Create Database Tables and Insert Data
 
 Once connected to the PostgresSQL CLI, switch to the `mydatabase` database and execute the SQL script located in the `init-scripts` folder. This script will create the necessary tables, indexes, and insert sample data into the database.
-In case, if the tables are not automatically created then can follow the previous steps and then from the command line
-can the data be inserted.
+In case, if the tables are not automatically created then can follow the previous steps and then from the command line can the data be inserted.
 ---
 
 ### 2. Build and Run the Application
@@ -136,6 +140,7 @@ API endpoints are available in the **endpoints** folder, along with a Postman co
 - **Local URL:** `http://localhost:8088`
 - **Docker URL:** `http://localhost:9088`
 
+There are 
 ---
 
 ### 7. Validations
