@@ -1,4 +1,4 @@
-package com.example.qnr.integrationTests;
+package com.example.qnr.controllersIT;
 
 import com.example.qnr.controllers.OrderController;
 import com.example.qnr.dto.OrderDto;
