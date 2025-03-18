@@ -7,6 +7,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository interface for accessing the Users entity in the database.
+ */
 @Repository
 public interface UserRepository extends JpaRepository<Users, Integer> {
 

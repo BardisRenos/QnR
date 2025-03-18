@@ -9,12 +9,18 @@ import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.cache.annotation.CacheConfig;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
+/**
+ * Service implementation for managing orders.
+ * Provides methods for CRUD operations on orders, including caching for optimization.
+ */
 @Slf4j
 @Service
 @RequiredArgsConstructor
@@ -24,6 +30,11 @@ public class OrderServiceImpl implements OrderService {
     private final OrderRepository orderRepository;
     private final OrderMapper orderMapper;
 
+    /**
+     * Retrieves all orders.
+     *
+     * @return a list of OrderDto representing all orders in the system.
+     */
     @Override
     public List<OrderDto> getAllOrders() {
         return orderRepository.findAll()
@@ -32,6 +43,14 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Retrieves orders based on their status from the cache or database.
+     * The result is cached to optimize subsequent requests for the same status.
+     *
+     * @param status the status of the orders to retrieve (e.g., "pending", "completed").
+     * @return a list of OrderDto representing orders with the given status.
+     * @throws NotFoundException if no orders are found with the given status.
+     */
     @Override
     @Cacheable(value = "orders", key = "#status")
     public List<OrderDto> getOrdersByStatus(String status) throws NotFoundException {
@@ -42,13 +61,29 @@ public class OrderServiceImpl implements OrderService {
                 .collect(Collectors.toList());
     }
 
+    /**
+     * Adds a new order to the system.
+     *
+     * @param orderDto the OrderDto object containing the order details.
+     * @return the created OrderDto.
+     */
     @Override
     public OrderDto insertNewOrder(OrderDto orderDto) {
         Order order = orderMapper.toOrder(orderDto);
         return orderMapper.toOrderDto(orderRepository.save(order));
     }
 
+    /**
+     * Updates an existing order in the system.
+     * The updated order is saved to the database and its cache entry is updated.
+     *
+     * @param orderDto the OrderDto object containing the updated order details.
+     * @param id the ID of the order to update.
+     * @return the updated OrderDto.
+     * @throws EntityNotFoundException if the order with the given ID does not exist.
+     */
     @Override
+    @CachePut(value = "orders", key = "#id")
     public OrderDto updateOrder(OrderDto orderDto, Integer id) {
         log.info("Updating an Order entity with ID: {}", id);
 
@@ -62,7 +97,15 @@ public class OrderServiceImpl implements OrderService {
         }).orElseThrow(() -> new EntityNotFoundException("Order with ID " + id + " not found"));
     }
 
+    /**
+     * Deletes an order by its ID.
+     * The cache entry for the deleted order is also evicted.
+     *
+     * @param id the ID of the order to delete.
+     * @return true if the order was successfully deleted, false if the order was not found.
+     */
     @Override
+    @CacheEvict(value = "orders", key = "#id")
     public boolean deleteOrder(Integer id) {
         return orderRepository.findById(id).map(order -> {
             orderRepository.delete(order);
@@ -70,6 +113,12 @@ public class OrderServiceImpl implements OrderService {
         }).orElse(false);
     }
 
+    /**
+     * Deletes orders in bulk based on their status.
+     *
+     * @param status the status of the orders to delete (e.g., "pending", "completed").
+     * @return the number of orders deleted.
+     */
     @Override
     public int bulkDeleteOrdersByStatus(String status) {
         return orderRepository.deleteOrdersByStatus(status);

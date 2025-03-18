@@ -5,6 +5,7 @@ import com.example.qnr.dto.UserDtoNoPass;
 import com.example.qnr.exception.GlobalExceptionHandler;
 import com.example.qnr.exception.NotFoundException;
 import com.example.qnr.resources.enums.UserRole;
+import com.example.qnr.security.SecurityProperties;
 import com.example.qnr.security.entities.AuthRequest;
 import com.example.qnr.security.entities.AuthResponse;
 import com.example.qnr.services.CustomUserDetailsService;
@@ -45,6 +46,9 @@ class UserControllerTest {
 
     @MockitoBean
     private CustomUserDetailsService userDetailsService;
+
+    @MockitoBean
+    private SecurityProperties securityProperties;
 
     @Test
     void testAddUser() throws Exception {

@@ -11,6 +11,9 @@ import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
 
+/**
+ * Repository interface for accessing the Order entity in the database.
+ */
 @Repository
 public interface OrderRepository extends JpaRepository<Order, Integer> {
 
