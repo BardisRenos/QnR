@@ -37,7 +37,7 @@ public class OrderController {
         return new ResponseEntity<>(orderService.updateOrder(order, orderId), HttpStatus.OK);
     }
 
-    @DeleteMapping("/{id}")
+    @DeleteMapping("/delete/{id}")
     public ResponseEntity<String> deleteOrder(@PathVariable Integer id) {
         if (orderService.deleteOrder(id)) {
             return ResponseEntity.ok("Order with ID " + id + " has been deleted.");

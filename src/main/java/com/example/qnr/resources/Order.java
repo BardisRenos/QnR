@@ -24,7 +24,6 @@ public class Order implements Serializable {
     private Integer orderId;
     @Column(name = "description")
     private String description;
-//    @Enumerated(EnumType.STRING)
     @Column(name = "status")
     private String status;
     @CreationTimestamp

@@ -68,5 +68,4 @@ public class UserServiceImpl implements UserService {
             return new AuthResponse("Authentication failed: An unexpected error occurred");
         }
     }
-
 }

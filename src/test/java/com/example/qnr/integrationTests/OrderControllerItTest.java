@@ -203,7 +203,7 @@ public class OrderControllerItTest {
 
     @Test
     void testDeleteOrder() throws Exception {
-        String url = "/api/v1.0/order/1";
+        String url = "/api/v1.0/order/delete/1";
         MvcResult mvcResult = mockMvc.perform(delete(url)
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
@@ -221,7 +221,7 @@ public class OrderControllerItTest {
 
     @Test
     void testDeleteNonExistentOrder() throws Exception {
-        String url = "/api/v1.0/order/999";
+        String url = "/api/v1.0/order/delete/999";
 
         mockMvc.perform(delete(url)
                         .contentType(MediaType.APPLICATION_JSON))
