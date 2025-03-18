@@ -11,6 +11,7 @@ import com.example.qnr.security.entities.AuthResponse;
 import com.example.qnr.services.CustomUserDetailsService;
 import com.example.qnr.services.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -49,6 +50,11 @@ class UserControllerTest {
 
     @MockitoBean
     private SecurityProperties securityProperties;
+
+    @BeforeEach
+    void setUp() {
+        when(securityProperties.getTokenPrefix()).thenReturn("Bearer ");
+    }
 
     @Test
     void testAddUser_SentAnewUser_WithSuccess() throws Exception {
@@ -152,6 +158,37 @@ class UserControllerTest {
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].username").value("jane_smith"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[0].role").value(UserRole.ADMIN.toString()))
                 .andExpect(MockMvcResultMatchers.jsonPath("$[1].role").value(UserRole.USER.toString()));
+    }
+
+    @Test
+    void testLogout_ValidToken_ShouldReturnOk() throws Exception {
+        String token = "valid_token";
+        String authHeader = "Bearer " + token;
+
+        Mockito.doNothing().when(userDetailsService).blacklistToken(token);
+        when(securityProperties.getTokenPrefix()).thenReturn("Bearer ");
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/v1.0/user/logout")
+                .header("Authorization", authHeader);
+
+        MockMvcBuilders.standaloneSetup(userController)
+                .setControllerAdvice(globalExceptionHandler)
+                .build()
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.content().string("Logged out successfully"));
+    }
+
+    @Test
+    void testLogout_MissingAuthorizationHeader_ShouldReturnBadRequest() throws Exception {
+        MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.post("/api/v1.0/user/logout")
+                .header("Authorization", "");
+
+        MockMvcBuilders.standaloneSetup(userController)
+                .setControllerAdvice(globalExceptionHandler)
+                .build()
+                .perform(requestBuilder)
+                .andExpect(MockMvcResultMatchers.status().isBadRequest())
+                .andExpect(MockMvcResultMatchers.content().string("Invalid token"));
     }
 
 }
