@@ -94,10 +94,10 @@ mvn spring-boot:run
 
 ### 3. Change Server Port
 
-By default, the application runs on port `8080`. To change the port to `8081`, update the `application.properties` file:
+By default, the application runs on port `8080`. To change the port to `8088`, update the `application.properties` file:
 
 ```properties
-server.port=8081
+server.port=8088
 ```
 
 ---
@@ -155,9 +155,14 @@ If no pagination parameters are provided, it defaults to page 0 and page size 10
 
 ---
 
+### 8. Redis Cache
+The application uses caching for the purpose of improving the speed of the system. 
+
+---
+
 ### 8. Validations
 
-The system ensures that the `OrderDto` and `UserDtoNoPass` are **NotBlank**. These validations are enforced to maintain data integrity within the application.
+The system ensures that the `OrderDto` and `UserDtoNoPass` are *NotBlank*. These validations are enforced to maintain data integrity within the application.
 
 ---
 

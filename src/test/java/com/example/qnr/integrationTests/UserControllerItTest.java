@@ -164,4 +164,47 @@ public class UserControllerItTest {
         assertNotNull(jsonResponse);
         assertTrue(jsonResponse.contains("token"));
     }
+
+    @Test
+    void testLogoutIT_WithValidToken_ShouldReturnOk() throws Exception {
+        AuthRequest authRequest = new AuthRequest("user1", "password1");
+        String authJson = objectMapper.writeValueAsString(authRequest);
+
+        MvcResult loginResult = mockMvc.perform(post("/api/v1.0/user/login")
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(authJson))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String loginResponse = loginResult.getResponse().getContentAsString();
+        String token = loginResponse.substring(loginResponse.indexOf("token\":\"") + 8, loginResponse.indexOf("\"}"));
+
+        MvcResult logoutResult = mockMvc.perform(post("/api/v1.0/user/logout")
+                        .header("Authorization", "Bearer " + token)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$").value("Logged out successfully"))
+                .andReturn();
+
+        String logoutResponse = logoutResult.getResponse().getContentAsString();
+        assertNotNull(logoutResponse);
+        assertEquals("Logged out successfully", logoutResponse);
+    }
+
+    @Test
+    void testLogoutIT_WithMissingAuthorizationHeader_ShouldReturnBadRequest() throws Exception {
+        MvcResult result = mockMvc.perform(post("/api/v1.0/user/logout")
+                        .header("Authorization", "")
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isBadRequest())
+                .andExpect(jsonPath("$").value("Invalid token"))
+                .andReturn();
+
+        String response = result.getResponse().getContentAsString();
+        assertNotNull(response);
+        assertEquals("Invalid token", response);
+    }
 }
