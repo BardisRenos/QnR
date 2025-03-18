@@ -29,7 +29,7 @@ class UserPrincipalTest {
     }
 
     @Test
-    void testGetAuthorities() {
+    void getAuthorities_ShouldReturnAuthorities_WhenCalled() {
         Collection<? extends GrantedAuthority> authorities = userPrincipalUnderTest.getAuthorities();
         assertNotNull(authorities);
         assertEquals(1, authorities.size());
@@ -37,14 +37,14 @@ class UserPrincipalTest {
     }
 
     @Test
-    void testGetPassword() {
+    void getPassword_ShouldReturnPassword_WhenCalled() {
         when(mockUser.getPassword()).thenReturn("password");
         final String result = userPrincipalUnderTest.getPassword();
         assertThat(result).isEqualTo("password");
     }
 
     @Test
-    void testGetUsername() {
+    void getUsername_ShouldReturnUsername_WhenCalled() {
         when(mockUser.getUsername()).thenReturn("username");
         final String result = userPrincipalUnderTest.getUsername();
         assertThat(result).isEqualTo("username");

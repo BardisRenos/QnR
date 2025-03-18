@@ -1,11 +1,11 @@
-INSERT INTO orders (description, status) VALUES
-('New order placed', 'PENDING'),
-('Order confirmed', 'PROCESSING'),
-('Shipped to customer', 'COMPLETED'),
-('Customer requested cancellation', 'CANCELLED'),
-('Awaiting payment', 'PENDING'),
-('Processing refund', 'PROCESSING'),
-('Delivered successfully', 'COMPLETED');
+INSERT INTO orders (order_id, description, status) VALUES
+(1, 'New order placed', 'PENDING'),
+(2, 'Order confirmed', 'PROCESSING'),
+(3, 'Shipped to customer', 'COMPLETED'),
+(4, 'Customer requested cancellation', 'CANCELLED'),
+(5, 'Awaiting payment', 'PENDING'),
+(6, 'Processing refund', 'PROCESSING'),
+(7, 'Delivered successfully', 'COMPLETED');
 
 INSERT INTO users (username, role, password) VALUES
 ('John', 'ADMIN', '$2a$10$Y5kU5FkEoB4A9jD7ZnVfXOa9kMkvSBDpSvsIQOVgixlxhj0NO7Y5S'),

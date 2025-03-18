@@ -15,12 +15,20 @@ import java.time.LocalDateTime;
 @Setter
 @AllArgsConstructor
 @NoArgsConstructor
-@Table(name = "orders", indexes = {@Index(name = "idx_orders_status", columnList = "status")})
+@Table(
+        name = "orders",
+        indexes = {
+                @Index(name = "idx_orders_status", columnList = "status"),
+                @Index(name = "idx_orders_order_id", columnList = "order_id")
+        }
+)
 public class Order implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "order_id", unique = true, nullable = false, updatable = false)
+    @Column(name = "id", unique = true, nullable = false, updatable = false)
+    private Integer id;
+    @Column(name = "order_id")
     private Integer orderId;
     @Column(name = "description")
     private String description;

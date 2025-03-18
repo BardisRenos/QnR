@@ -51,7 +51,7 @@ class UserControllerTest {
     private SecurityProperties securityProperties;
 
     @Test
-    void testAddUser() throws Exception {
+    void testAddUser_SentAnewUser_WithSuccess() throws Exception {
         when(userServiceImpl.insertUser(Mockito.any()))
                 .thenReturn(new UserDto("jane_doe", UserRole.ADMIN, "pass_123"));
 
@@ -75,7 +75,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testGetAllUsers() throws Exception {
+    void testGet_allUsers_WithSuccess() throws Exception {
         List<UserDtoNoPass> mockUserDtos = List.of(
                 new UserDtoNoPass("john_doe", UserRole.ADMIN),
                 new UserDtoNoPass("jane_smith", UserRole.USER),
@@ -100,7 +100,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testLogin() throws Exception {
+    void testUserLogin_WithValid_Credentials() throws Exception {
         when(userServiceImpl.verify(Mockito.any())).thenReturn(new AuthResponse("ABC123"));
         AuthRequest authRequest = new AuthRequest("pass_123", "janedoe");
         String content = (new ObjectMapper()).writeValueAsString(authRequest);
@@ -118,7 +118,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testGetUsersByRole_thenStatusIsNotFound() throws Exception {
+    void testGetUsersByRole_thenStatusIsNotFound_NotFound() throws Exception {
         when(userServiceImpl.getByUserRole(Mockito.any())).thenThrow(new NotFoundException("An error occurred"));
         MockHttpServletRequestBuilder requestBuilder = MockMvcRequestBuilders.get("/api/v1.0/user/{user_role}",
                 "User role");
@@ -133,7 +133,7 @@ class UserControllerTest {
     }
 
     @Test
-    void testGetUsersByRole_thenStatusIsOk() throws Exception {
+    void testGetUsersByRole_thenStatusIsOk_WithSuccess() throws Exception {
         List<UserDtoNoPass> mockUserDtos = List.of(
                 new UserDtoNoPass("john_doe", UserRole.ADMIN),
                 new UserDtoNoPass("jane_smith", UserRole.USER)

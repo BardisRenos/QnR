@@ -29,8 +29,8 @@ public class ConstraintsTests {
     }
 
     @Test
-    void testInvalidOrderDto_NullOrEmptyDescription_RiseExceptionMessage() {
-        OrderDto order = new OrderDto("", "PENDING", LocalDateTime.now());
+    void invalidOrderDto_ShouldRiseExceptionMessage_WhenDescriptionIsNullOrEmpty() {
+        OrderDto order = new OrderDto(1, "", "PENDING", LocalDateTime.now());
 
         Set<ConstraintViolation<OrderDto>> violations = validator.validate(order);
         assertFalse(violations.isEmpty());
@@ -39,8 +39,8 @@ public class ConstraintsTests {
     }
 
     @Test
-    void testInvalidOrderDto_NullOrEmptyStatus_RiseExceptionMessage() {
-        OrderDto order = new OrderDto("Sample Order Description", "", LocalDateTime.now());
+    void invalidOrderDto_ShouldRiseExceptionMessage_WhenStatusIsNullOrEmpty() {
+        OrderDto order = new OrderDto(1, "Sample Order Description", "", LocalDateTime.now());
 
         Set<ConstraintViolation<OrderDto>> violations = validator.validate(order);
         assertFalse(violations.isEmpty());
@@ -49,7 +49,7 @@ public class ConstraintsTests {
     }
 
     @Test
-    void shouldFailValidationWhenUsernameAndPasswordAreBlank() {
+    void usernameAndPassword_ShouldFailValidation_WhenBlank() {
         AuthRequest authRequest = new AuthRequest(" ", " ");
 
         Set<ConstraintViolation<AuthRequest>> violations = validator.validate(authRequest);
@@ -63,7 +63,7 @@ public class ConstraintsTests {
     }
 
     @Test
-    void shouldFailValidationWhenUsernameIsBlank() {
+    void username_ShouldFailValidation_WhenBlank() {
         AuthRequest authRequest = new AuthRequest(" ", "ValidPassword123");
 
         Set<ConstraintViolation<AuthRequest>> violations = validator.validate(authRequest);
@@ -73,7 +73,7 @@ public class ConstraintsTests {
     }
 
     @Test
-    void shouldFailValidationWhenPasswordIsBlank() {
+    void password_ShouldFailValidation_WhenBlank() {
         AuthRequest authRequest = new AuthRequest("ValidUsername", " ");
 
         Set<ConstraintViolation<AuthRequest>> violations = validator.validate(authRequest);
@@ -83,7 +83,7 @@ public class ConstraintsTests {
     }
 
     @Test
-    void shouldPassValidationWhenUsernameAndPasswordAreValid() {
+    void usernameAndPassword_ShouldPassValidation_WhenValid() {
         AuthRequest authRequest = new AuthRequest("ValidUser", "SecurePassword");
 
         Set<ConstraintViolation<AuthRequest>> violations = validator.validate(authRequest);

@@ -107,8 +107,8 @@ public class OrderController {
      * @param size      The page size.
      * @return A paginated list of orders matching the filters.
      */
-    @GetMapping("/orders")
-    public Page<OrderDto> getOrders(
+    @GetMapping("/searchByFilter")
+    public Page<OrderDto> getOrdersWithFilters(
             @RequestParam(required = false) String status,
             @RequestParam(required = false) LocalDateTime startDate,
             @RequestParam(required = false) LocalDateTime endDate,

@@ -47,18 +47,18 @@ public class OrderServiceImplTest {
     void setUp() {
         orderService = new OrderServiceImpl(orderRepository, orderMapper);
 
-        order = new Order(1, "Test Order", "PENDING", LocalDateTime.now());
-        orderDto = new OrderDto("Test Order", "PENDING", order.getCreateDate());
+        order = new Order(1, 123, "Test Order", "PENDING", LocalDateTime.now());
+        orderDto = new OrderDto(123, "Test Order", "PENDING", order.getCreateDate());
         startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
         endDate = LocalDateTime.of(2024, 12, 31, 23, 59);
     }
 
     @Test
     void getAllOrders_ShouldReturnOrder() {
-        Order order1 = new Order(1, "Order 1", "PENDING", LocalDateTime.of(2024, 3, 17, 12, 0));
-        Order order2 = new Order(2, "Order 2", "COMPLETED", LocalDateTime.of(2024, 3, 16, 10, 30));
-        OrderDto orderDto1 = new OrderDto("Order 1", "PENDING", LocalDateTime.of(2024, 3, 17, 12, 0));
-        OrderDto orderDto2 = new OrderDto("Order 2", "COMPLETED", LocalDateTime.of(2024, 3, 16, 10, 30));
+        Order order1 = new Order(1, 123 ,"Order 1", "PENDING", LocalDateTime.of(2024, 3, 17, 12, 0));
+        Order order2 = new Order(2, 124,"Order 2", "COMPLETED", LocalDateTime.of(2024, 3, 16, 10, 30));
+        OrderDto orderDto1 = new OrderDto(123,"Order 1", "PENDING", LocalDateTime.of(2024, 3, 17, 12, 0));
+        OrderDto orderDto2 = new OrderDto(124,"Order 2", "COMPLETED", LocalDateTime.of(2024, 3, 16, 10, 30));
 
         when(orderRepository.findAll()).thenReturn(Arrays.asList(order1, order2));
         when(orderMapper.toOrderDto(order1)).thenReturn(orderDto1);
@@ -80,10 +80,10 @@ public class OrderServiceImplTest {
     @Test
     void getOrdersByStatus_ShouldReturnListOfOrders_WhenOrdersExist() throws NotFoundException {
         String status = "PENDING";
-        Order order1 = new Order(1, "Order 1", "PENDING", LocalDateTime.of(2024, 3, 17, 12, 0));
-        Order order2 = new Order(2, "Order 2", "PENDING", LocalDateTime.of(2024, 3, 16, 10, 30));
-        OrderDto orderDto1 = new OrderDto("Order 1", "PENDING", LocalDateTime.of(2024, 3, 17, 12, 0));
-        OrderDto orderDto2 = new OrderDto("Order 2", "PENDING", LocalDateTime.of(2024, 3, 16, 10, 30));
+        Order order1 = new Order(1, 123, "Order 1", "PENDING", LocalDateTime.of(2024, 3, 17, 12, 0));
+        Order order2 = new Order(2, 124,"Order 2", "PENDING", LocalDateTime.of(2024, 3, 16, 10, 30));
+        OrderDto orderDto1 = new OrderDto(123,"Order 1", "PENDING", LocalDateTime.of(2024, 3, 17, 12, 0));
+        OrderDto orderDto2 = new OrderDto(124,"Order 2", "PENDING", LocalDateTime.of(2024, 3, 16, 10, 30));
 
         when(orderRepository.findOrdersByStatusSorted(status)).thenReturn(Optional.of(Arrays.asList(order1, order2)));
         when(orderMapper.toOrderDto(order1)).thenReturn(orderDto1);
@@ -117,10 +117,10 @@ public class OrderServiceImplTest {
     @Test
     void updateOrder_ShouldUpdateExistingOrder_WhenOrderExists() {
         Integer orderId = 1;
-        OrderDto orderDto = new OrderDto("Updated Order", "SHIPPED", LocalDateTime.of(2024, 3, 17, 14, 0));
-        Order existingOrder = new Order(orderId, "Old Order", "PENDING", LocalDateTime.of(2024, 3, 16, 10, 30));
-        Order updatedOrder = new Order(orderId, "Updated Order", "SHIPPED", LocalDateTime.of(2024, 3, 17, 14, 0));
-        OrderDto updatedOrderDto = new OrderDto("Updated Order", "SHIPPED", LocalDateTime.of(2024, 3, 17, 14, 0));
+        OrderDto orderDto = new OrderDto(123,"Updated Order", "SHIPPED", LocalDateTime.of(2024, 3, 17, 14, 0));
+        Order existingOrder = new Order(1, orderId, "Old Order", "PENDING", LocalDateTime.of(2024, 3, 16, 10, 30));
+        Order updatedOrder = new Order(1, orderId, "Updated Order", "SHIPPED", LocalDateTime.of(2024, 3, 17, 14, 0));
+        OrderDto updatedOrderDto = new OrderDto(123, "Updated Order", "SHIPPED", LocalDateTime.of(2024, 3, 17, 14, 0));
 
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(existingOrder));
         when(orderRepository.save(existingOrder)).thenReturn(updatedOrder);
@@ -140,10 +140,10 @@ public class OrderServiceImplTest {
 
     @Test
     void insertNewOrder_ShouldInsertOrderAndReturnOrderDto() {
-        OrderDto orderDto = new OrderDto("New Order", "PENDING", LocalDateTime.of(2025, 3, 17, 10, 0));
-        Order order = new Order(null, "New Order", "PENDING", LocalDateTime.of(2025, 3, 17, 10, 0));
-        Order savedOrder = new Order(1, "New Order", "PENDING", LocalDateTime.of(2025, 3, 17, 10, 0));
-        OrderDto savedOrderDto = new OrderDto("New Order", "PENDING", LocalDateTime.of(2025, 3, 17, 10, 0));
+        OrderDto orderDto = new OrderDto(123,"New Order", "PENDING", LocalDateTime.of(2025, 3, 17, 10, 0));
+        Order order = new Order(1,null, "New Order", "PENDING", LocalDateTime.of(2025, 3, 17, 10, 0));
+        Order savedOrder = new Order(1,124, "New Order", "PENDING", LocalDateTime.of(2025, 3, 17, 10, 0));
+        OrderDto savedOrderDto = new OrderDto(124, "New Order", "PENDING", LocalDateTime.of(2025, 3, 17, 10, 0));
 
         when(orderMapper.toOrder(orderDto)).thenReturn(order);
         when(orderMapper.toOrderDto(savedOrder)).thenReturn(savedOrderDto);
@@ -161,7 +161,7 @@ public class OrderServiceImplTest {
     @Test
     void deleteOrder_ShouldReturnTrue_WhenOrderExists() {
         Integer orderId = 1;
-        Order order = new Order(orderId, "Test Order", "PENDING", null);
+        Order order = new Order(1, orderId, "Test Order", "PENDING", null);
         when(orderRepository.findById(orderId)).thenReturn(Optional.of(order));
 
         boolean result = orderService.deleteOrder(orderId);

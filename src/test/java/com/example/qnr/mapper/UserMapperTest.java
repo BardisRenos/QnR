@@ -7,15 +7,13 @@ import com.example.qnr.resources.enums.UserRole;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.junit.jupiter.MockitoExtension;
-
-
 import static org.assertj.core.api.Assertions.assertThat;
 
 @ExtendWith(MockitoExtension.class)
 class UserMapperTest {
 
     @Test
-    void toOrderDto_ShouldMapUserToUserDto() {
+    void toOrderDto_ShouldMapUserToUserDto_WithSuccess() {
         Users user = new Users(1, "john_doe", "ADMIN", "encodedPassword");
 
         UserMapper userMapper = new UserMapper();
@@ -28,7 +26,7 @@ class UserMapperTest {
     }
 
     @Test
-    void toOrders_ShouldMapUserDtoToUser() {
+    void toOrders_ShouldMapUserDtoToUser_WithSuccess() {
         UserDto userDto = new UserDto("john_doe", UserRole.ADMIN,"encodedPassword");
 
         UserMapper userMapper = new UserMapper();

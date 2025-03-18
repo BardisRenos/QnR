@@ -61,14 +61,14 @@ class OrderControllerTest {
     @BeforeEach
     public void setUp() {
         this.mockMvc = MockMvcBuilders.webAppContextSetup(this.context).build();
-        orderDto = new OrderDto("New Order", "SHIPPED", LocalDateTime.of(2024, 3, 17, 14, 0));
-        updatedOrderDto = new OrderDto("Updated Order", "SHIPPED", LocalDateTime.of(2024, 3, 17, 14, 0));
+        orderDto = new OrderDto(1, "New Order", "SHIPPED", LocalDateTime.of(2024, 3, 17, 14, 0));
+        updatedOrderDto = new OrderDto(2, "Updated Order", "SHIPPED", LocalDateTime.of(2024, 3, 17, 14, 0));
     }
 
     @Test
-    void getAllOrders_ShouldReturnOrderList() throws Exception {
-        OrderDto order1 = new OrderDto("Order 1", OrderStatus.PENDING.name(), LocalDateTime.now());
-        OrderDto order2 = new OrderDto("Order 2", OrderStatus.SHIPPED.name(), LocalDateTime.now());
+    void getAllOrders_ShouldReturnOrderList_WithSuccess() throws Exception {
+        OrderDto order1 = new OrderDto(1,"Order 1", OrderStatus.PENDING.name(), LocalDateTime.now());
+        OrderDto order2 = new OrderDto(2,"Order 2", OrderStatus.SHIPPED.name(), LocalDateTime.now());
         List<OrderDto> orders = Arrays.asList(order1, order2);
 
         when(orderService.getAllOrders()).thenReturn(orders);
@@ -86,7 +86,7 @@ class OrderControllerTest {
     @Test
     void getOrdersByStatus_ShouldReturnOrderList_WhenOrdersExist() throws Exception {
         String status = "PENDING";
-        OrderDto order = new OrderDto("Order 1", OrderStatus.PENDING.name(), LocalDateTime.now());
+        OrderDto order = new OrderDto(1, "Order 1", OrderStatus.PENDING.name(), LocalDateTime.now());
         List<OrderDto> orders = List.of(order);
 
         when(orderService.getOrdersByStatus(status)).thenReturn(orders);
@@ -111,8 +111,8 @@ class OrderControllerTest {
     }
 
     @Test
-    void addNewOrder_ShouldReturnCreatedOrder() throws Exception {
-        OrderDto order = new OrderDto("New Order", OrderStatus.PENDING.name(), LocalDateTime.now());
+    void addNewOrder_ShouldReturnCreatedOrder_WithSuccess() throws Exception {
+        OrderDto order = new OrderDto(1, "New Order", OrderStatus.PENDING.name(), LocalDateTime.now());
         when(orderService.insertNewOrder(any(OrderDto.class))).thenReturn(order);
 
         mockMvc.perform(post("/api/v1.0/order/add")
@@ -149,7 +149,7 @@ class OrderControllerTest {
     }
 
     @Test
-    public void testDeleteOrder_whenOrderExists() throws Exception {
+    public void testDeleteOrder_whenOrderExists_WithSuccess() throws Exception {
         int orderId = 1;
         when(orderService.deleteOrder(orderId)).thenReturn(true);
 
@@ -161,7 +161,7 @@ class OrderControllerTest {
     }
 
     @Test
-    void bulkDeleteOrders_ShouldReturnDeletedCount() throws Exception {
+    void bulkDeleteOrders_ShouldReturnDeletedCount_WithSuccess() throws Exception {
         String status = OrderStatus.PENDING.name();
         int deletedCount = 5;
 
@@ -176,7 +176,7 @@ class OrderControllerTest {
 
 
     @Test
-    public void testGetOrdersWithFilters() throws Exception {
+    public void testGetOrdersWithFilters_ShouldReturnOrderDto_WithSuccess() throws Exception {
         String status = "ACTIVE";
         LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
         LocalDateTime endDate = LocalDateTime.of(2025, 12, 31, 23, 59);
@@ -185,12 +185,12 @@ class OrderControllerTest {
 
         String jwtToken = "your-valid-jwt-token";
 
-        OrderDto orderDto = new OrderDto("Test Order", "PENDING", startDate);
+        OrderDto orderDto = new OrderDto(1, "Test Order", "PENDING", startDate);
         Page<OrderDto> pageResult = new PageImpl<>(Collections.singletonList(orderDto), PageRequest.of(page, size), 1);
 
         when(orderService.getFilteredOrders(status, startDate, endDate, page, size)).thenReturn(pageResult);
 
-        mockMvc.perform(get("/api/v1.0/order/orders")
+        mockMvc.perform(get("/api/v1.0/order/searchByFilter")
                 .param("status", status)
                 .param("startDate", startDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                 .param("endDate", endDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))

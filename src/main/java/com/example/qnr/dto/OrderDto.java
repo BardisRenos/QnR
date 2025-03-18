@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
 import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -20,6 +21,8 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 public class OrderDto implements Serializable {
 
+    @NotNull(message = "The order id  can not be null")
+    private Integer orderId;
     @NotBlank(message = "The description can not be null or empty")
     private String description;
     @NotBlank(message = "The status can not be null or empty")
@@ -28,5 +31,4 @@ public class OrderDto implements Serializable {
     @JsonDeserialize(using = LocalDateTimeDeserializer.class)
     @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime createDate;
-
 }

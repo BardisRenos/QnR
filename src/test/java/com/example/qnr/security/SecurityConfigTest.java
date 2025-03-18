@@ -42,7 +42,7 @@ class SecurityConfigTest {
     }
 
     @Test
-    void testSecurityFilterChain() throws Exception {
+    void securityFilterChain_ShouldReturnSecurityFilterChain_WhenSecurityConfigIsValid() throws Exception {
         HttpSecurity httpSecurity = mock(HttpSecurity.class);
         SecurityFilterChain securityFilterChain = mock(SecurityFilterChain.class);
         doReturn(httpSecurity).when(httpSecurity).csrf(any());
@@ -62,7 +62,7 @@ class SecurityConfigTest {
     }
 
     @Test
-    void testAuthenticationManager() throws Exception {
+    void authenticationManager_ShouldReturnAuthenticationManager_WhenConfigIsValid() throws Exception {
         AuthenticationConfiguration config = mock(AuthenticationConfiguration.class);
         AuthenticationManager authManager = mock(AuthenticationManager.class);
         doReturn(authManager).when(config).getAuthenticationManager();
@@ -72,7 +72,7 @@ class SecurityConfigTest {
     }
 
     @Test
-    void testPasswordEncoder() {
+    void passwordEncoder_ShouldReturnBCryptPasswordEncoder_WhenCalled() {
         PasswordEncoder result = securityConfig.passwordEncoder();
         assertThat(result, is(instanceOf(BCryptPasswordEncoder.class)));
     }

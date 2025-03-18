@@ -15,7 +15,7 @@ class AuthResponseTest {
     }
 
     @Test
-    void testTokenGetterAndSetter() {
+    void getToken_ShouldReturnToken_WhenCalled() {
         final String token = "token";
         assertThat(authResponseUnderTest.getToken()).isEqualTo(token);
     }

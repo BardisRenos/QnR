@@ -7,7 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 class AuthRequestTest {
 
     @Test
-    void testGettersAndSetters() {
+    void gettersAndSetters_ShouldWorkAsExpected_WhenCalled() {
         AuthRequest actualAuthRequest = new AuthRequest("janedoe", "pass_1233");
         actualAuthRequest.setPassword("pass_1233");
         actualAuthRequest.setUsername("janedoe");

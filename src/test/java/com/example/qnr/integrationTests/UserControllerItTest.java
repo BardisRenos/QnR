@@ -21,7 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
@@ -102,7 +102,7 @@ public class UserControllerItTest {
         List<UserDto> users = objectMapper.readValue(jsonResponse, objectMapper.getTypeFactory().constructCollectionType(List.class, UserDto.class));
 
         assertNotNull(users);
-        Assertions.assertEquals(3, users.size());
+        assertEquals(3, users.size());
     }
 
     @Test
@@ -118,7 +118,7 @@ public class UserControllerItTest {
         List<UserDto> users = objectMapper.readValue(jsonResponse, objectMapper.getTypeFactory().constructCollectionType(List.class, UserDto.class));
 
         assertNotNull(users);
-        Assertions.assertEquals(2, users.size());
+        assertEquals(2, users.size());
     }
 
     @Test
@@ -142,8 +142,9 @@ public class UserControllerItTest {
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         UserDto createdUser = objectMapper.readValue(jsonResponse, UserDto.class);
 
-        Assertions.assertEquals("newUser", createdUser.getUsername());
-        Assertions.assertEquals("USER", createdUser.getRole().name());
+        assertNotNull(createdUser);
+        assertEquals("newUser", createdUser.getUsername());
+        assertEquals("USER", createdUser.getRole().name());
     }
 
     @Test
@@ -160,6 +161,7 @@ public class UserControllerItTest {
                 .andReturn();
 
         String jsonResponse = mvcResult.getResponse().getContentAsString();
-        Assertions.assertTrue(jsonResponse.contains("token"));
+        assertNotNull(jsonResponse);
+        assertTrue(jsonResponse.contains("token"));
     }
 }

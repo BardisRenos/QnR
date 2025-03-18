@@ -87,23 +87,23 @@ public class OrderControllerItTest {
     }
 
     private void insertTestData() {
-        String insertSql = "INSERT INTO orders (description, status, create_date) VALUES (?, ?, ?)";
+        String insertSql = "INSERT INTO orders (order_id, description, status, create_date) VALUES (?, ?, ?, ?)";
 
         List<Object[]> data = List.of(
-                new Object[]{"Order 1 description", "Pending", Timestamp.valueOf(LocalDateTime.now())},
-                new Object[]{"Order 2 description", "Completed", Timestamp.valueOf(LocalDateTime.now().plusHours(1))},
-                new Object[]{"Order 3 description", "Pending", Timestamp.valueOf(LocalDateTime.now().plusHours(2))},
-                new Object[]{"Order 4 description", "Completed", Timestamp.valueOf(LocalDateTime.now().plusHours(3))},
-                new Object[]{"Order 5 description", "Pending", Timestamp.valueOf(LocalDateTime.now().plusHours(4))}
+                new Object[]{1, "Order 1 description", "Pending", Timestamp.valueOf(LocalDateTime.now())},
+                new Object[]{2, "Order 2 description", "Completed", Timestamp.valueOf(LocalDateTime.now().plusHours(1))},
+                new Object[]{3, "Order 3 description", "Pending", Timestamp.valueOf(LocalDateTime.now().plusHours(2))},
+                new Object[]{4, "Order 4 description", "Completed", Timestamp.valueOf(LocalDateTime.now().plusHours(3))},
+                new Object[]{5, "Order 5 description", "Pending", Timestamp.valueOf(LocalDateTime.now().plusHours(4))}
         );
 
         jdbcTemplate.batchUpdate(insertSql, data);
     }
 
     @Test
-    void testGetAllOrders() throws Exception {
+    void getAllOrders_ShouldReturnFiveOrders_WhenCalled() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/v1.0/order/all")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()", is(5)))
@@ -117,15 +117,15 @@ public class OrderControllerItTest {
         List<OrderDto> orders = objectMapper.readValue(jsonResponse, objectMapper.getTypeFactory().constructCollectionType(List.class, OrderDto.class));
 
         assertNotNull(orders);
-        Assertions.assertEquals(5, orders.size());
-        Assertions.assertEquals("Order 1 description", orders.get(0).getDescription());
-        Assertions.assertEquals("Pending", orders.get(0).getStatus());
+        assertEquals(5, orders.size());
+        assertEquals("Order 1 description", orders.get(0).getDescription());
+        assertEquals("Pending", orders.get(0).getStatus());
     }
 
     @Test
-    void testGetOrdersByStatus() throws Exception {
+    void getOrdersByStatus_ShouldReturnThreePendingOrders_WhenStatusIsPending() throws Exception {
         MvcResult mvcResult = mockMvc.perform(get("/api/v1.0/order/Pending")
-                .contentType(MediaType.APPLICATION_JSON))
+                        .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$[*]", hasSize(3)))
@@ -141,22 +141,23 @@ public class OrderControllerItTest {
         List<OrderDto> orders = objectMapper.readValue(jsonResponse, objectMapper.getTypeFactory().constructCollectionType(List.class, OrderDto.class));
 
         assertNotNull(orders);
-        Assertions.assertEquals(3, orders.size());
-        Assertions.assertEquals("Order 5 description", orders.get(0).getDescription());
-        Assertions.assertEquals("Pending", orders.get(0).getStatus());
+        assertEquals(3, orders.size());
+        assertEquals("Order 5 description", orders.get(0).getDescription());
+        assertEquals("Pending", orders.get(0).getStatus());
     }
 
     @Test
-    void testAddNewOrder() throws Exception {
+    void addNewOrder_ShouldCreateOrder_WhenOrderIsValid() throws Exception {
         OrderDto newOrder = new OrderDto();
+        newOrder.setOrderId(1);
         newOrder.setDescription("New Order Description");
         newOrder.setStatus("Pending");
 
         String orderJson = objectMapper.writeValueAsString(newOrder);
 
         MvcResult mvcResult = mockMvc.perform(post("/api/v1.0/order/add")
-                .contentType(MediaType.APPLICATION_JSON)
-                .content(orderJson))
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(orderJson))
                 .andDo(print())
                 .andExpect(status().isCreated())
                 .andExpect(jsonPath("$.description").value("New Order Description"))
@@ -166,14 +167,15 @@ public class OrderControllerItTest {
         String jsonResponse = mvcResult.getResponse().getContentAsString();
         OrderDto createdOrder = objectMapper.readValue(jsonResponse, OrderDto.class);
 
-        Assertions.assertEquals("New Order Description", createdOrder.getDescription());
-        Assertions.assertEquals("Pending", createdOrder.getStatus());
+        assertEquals("New Order Description", createdOrder.getDescription());
+        assertEquals("Pending", createdOrder.getStatus());
     }
 
     @Test
-    void testUpdateOrder() throws Exception {
+    void updateOrder_ShouldUpdateOrder_WhenOrderIsValid() throws Exception {
         int orderId = 2;
         OrderDto updatedOrder = new OrderDto();
+        updatedOrder.setOrderId(2);
         updatedOrder.setDescription("Updated Description");
         updatedOrder.setStatus("Completed");
         updatedOrder.setCreateDate(LocalDateTime.now().plusDays(1));
@@ -188,9 +190,10 @@ public class OrderControllerItTest {
                 .andExpect(jsonPath("$.status").value("Completed"))
                 .andReturn();
 
-        String query = "SELECT order_id, description, status, create_date FROM orders WHERE order_id = ?";
+        String query = "SELECT id, order_id, description, status, create_date FROM orders WHERE order_id = ?";
         com.example.qnr.resources.Order order = jdbcTemplate.queryForObject(query, (rs, rowNum) -> {
             com.example.qnr.resources.Order o = new Order();
+            o.setId(rs.getInt("id"));
             o.setOrderId(rs.getInt("order_id"));
             o.setDescription(rs.getString("description"));
             o.setStatus(rs.getString("status"));
@@ -204,7 +207,7 @@ public class OrderControllerItTest {
     }
 
     @Test
-    void testDeleteOrder() throws Exception {
+    void deleteOrder_ShouldDeleteOrder_WhenOrderExists() throws Exception {
         String url = "/api/v1.0/order/delete/1";
         MvcResult mvcResult = mockMvc.perform(delete(url)
                         .contentType(MediaType.APPLICATION_JSON))
@@ -218,11 +221,11 @@ public class OrderControllerItTest {
         String checkQuery = "SELECT COUNT(*) FROM orders WHERE order_id = 1";
         Integer count = jdbcTemplate.queryForObject(checkQuery, Integer.class);
 
-        Assertions.assertEquals(0, count);
+        assertEquals(0, count);
     }
 
     @Test
-    void testDeleteNonExistentOrder() throws Exception {
+    void deleteOrder_ShouldReturnNotFound_WhenOrderDoesNotExist() throws Exception {
         String url = "/api/v1.0/order/delete/999";
 
         mockMvc.perform(delete(url)
@@ -232,7 +235,7 @@ public class OrderControllerItTest {
     }
 
     @Test
-    void testBulkDeleteOrders() throws Exception {
+    void bulkDeleteOrders_ShouldDeleteAllPendingOrders_WhenStatusIsPending() throws Exception {
         String countBeforeQuery = "SELECT COUNT(*) FROM orders WHERE status = 'Pending'";
         Integer countBefore = jdbcTemplate.queryForObject(countBeforeQuery, Integer.class);
         assertEquals(3, countBefore, "There should be 3 pending orders initially");
@@ -249,15 +252,11 @@ public class OrderControllerItTest {
         String checkQuery = "SELECT COUNT(*) FROM orders WHERE status = 'Pending'";
 
         Integer count = jdbcTemplate.queryForObject(checkQuery, Integer.class);
-        Assertions.assertEquals(0, count);
-
-        String checkCompletedQuery = "SELECT COUNT(*) FROM orders WHERE status = 'Pending'";
-        Integer completedCount = jdbcTemplate.queryForObject(checkCompletedQuery, Integer.class);
-        Assertions.assertEquals(0, completedCount);
+        assertEquals(0, count);
     }
 
     @Test
-    void testGetOrdersByDateRange() throws Exception {
+    void getOrdersByDateRange_ShouldReturnOrdersInRange_WhenDateRangeIsProvided() throws Exception {
         String status = "Pending";
         LocalDateTime startDate = LocalDateTime.now().minusMinutes(10);
         LocalDateTime endDate = LocalDateTime.now().plusHours(4).plusMinutes(10);
@@ -265,7 +264,7 @@ public class OrderControllerItTest {
         int size = 10;
         String jwtToken = "your-valid-jwt-token";
 
-        MvcResult mvcResult = mockMvc.perform(get("/api/v1.0/order/orders")
+        MvcResult mvcResult = mockMvc.perform(get("/api/v1.0/order/searchByFilter")
                         .param("status", status)
                         .param("startDate", startDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
                         .param("endDate", endDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
@@ -291,8 +290,8 @@ public class OrderControllerItTest {
         List<OrderDto> orders = objectMapper.readValue(contentJson, objectMapper.getTypeFactory().constructCollectionType(List.class, OrderDto.class));
 
         assertNotNull(orders);
-        Assertions.assertEquals(3, orders.size());
-        Assertions.assertEquals("Order 1 description", orders.get(0).getDescription());
-        Assertions.assertEquals("Pending", orders.get(0).getStatus());
+        assertEquals(3, orders.size());
+        assertEquals("Order 1 description", orders.get(0).getDescription());
+        assertEquals("Pending", orders.get(0).getStatus());
     }
 }

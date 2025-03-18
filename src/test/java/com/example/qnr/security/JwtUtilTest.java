@@ -32,7 +32,7 @@ class JwtUtilTest {
     }
 
     @Test
-    void testGenerateToken() {
+    void generateToken_ShouldReturnNonBlankToken_WhenCalledWithValidUsername() {
         when(mockSecurityProperties.getExpiration()).thenReturn(0L);
         final String result = jwtUtil.generateToken("username");
         assertThat(result).isNotBlank();
@@ -40,14 +40,14 @@ class JwtUtilTest {
     }
 
     @Test
-    void testExtractUsername() {
+    void extractUsername_ShouldReturnUsername_WhenTokenIsValid() {
         String token = jwtUtil.generateToken("testuser");
         String username = jwtUtil.extractUsername(token);
         assertEquals("testuser", username);
     }
 
     @Test
-    void testExtractClaim() {
+    void extractClaim_ShouldReturnExpirationDate_WhenTokenIsValid() {
         String token = jwtUtil.generateToken("testuser");
         Date expiration = jwtUtil.extractExpiration(token);
         assertNotNull(expiration);
@@ -55,7 +55,7 @@ class JwtUtilTest {
     }
 
     @Test
-    void testValidateToken() {
+    void validateToken_ShouldReturnTrue_WhenTokenIsValidAndUserDetailsMatch() {
         String token = jwtUtil.generateToken("john");
         Users user = new Users(1, "john", "ADMIN",  "pass123");
         UserDetails userDetails = new UserPrincipal(user);
