@@ -7,6 +7,7 @@ import com.example.qnr.exception.NotFoundException;
 import com.example.qnr.resources.enums.UserRole;
 import com.example.qnr.security.entities.AuthRequest;
 import com.example.qnr.security.entities.AuthResponse;
+import com.example.qnr.services.CustomUserDetailsService;
 import com.example.qnr.services.UserServiceImpl;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.Test;
@@ -20,9 +21,11 @@ import org.springframework.test.web.servlet.request.MockHttpServletRequestBuilde
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
+import org.springframework.web.context.WebApplicationContext;
 
 import java.util.List;
-import static org.mockito.Mockito.*;
+
+import static org.mockito.Mockito.when;
 
 @ContextConfiguration(classes = {UserController.class, GlobalExceptionHandler.class})
 @WebMvcTest(controllers = UserController.class)
@@ -32,10 +35,16 @@ class UserControllerTest {
     private GlobalExceptionHandler globalExceptionHandler;
 
     @Autowired
+    private WebApplicationContext context;
+
+    @Autowired
     private UserController userController;
 
     @MockitoBean
     private UserServiceImpl userServiceImpl;
+
+    @MockitoBean
+    private CustomUserDetailsService userDetailsService;
 
     @Test
     void testAddUser() throws Exception {

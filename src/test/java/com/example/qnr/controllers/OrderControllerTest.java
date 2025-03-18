@@ -137,7 +137,7 @@ class OrderControllerTest {
         Integer orderId = 1;
         when(orderService.deleteOrder(orderId)).thenReturn(false);
 
-        mockMvc.perform(delete("/api/v1.0/order/1"))
+        mockMvc.perform(delete("/api/v1.0/order/delete/1"))
                 .andExpect(status().isNotFound());
 
         verify(orderService, times(1)).deleteOrder(orderId);
