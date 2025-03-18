@@ -67,6 +67,7 @@ Finally, to see the db tables then type:
 
 Once connected to the PostgresSQL CLI, switch to the `mydatabase` database and execute the SQL script located in the `init-scripts` folder. This script will create the necessary tables, indexes, and insert sample data into the database.
 In case, if the tables are not automatically created then can follow the previous steps and then from the command line can the data be inserted.
+
 ---
 
 ### 2. Build and Run the Application
@@ -144,6 +145,8 @@ from the top right the Environments drop down list.
 - **Local URL:** `http://localhost:8088`
 - **Docker URL:** `http://localhost:9088`
 
+There is a folder **API-Documentation** which has 3 .json files. Need to import into Postman in order to test the application.
+
 ---
 ### 7. Advanced Query with filter and Pagination
 The custom query retrieves Order entities with filtering and pagination support.
@@ -186,4 +189,8 @@ This interface allows you to test all available endpoints with ease.
 
 The application includes both **unit tests** for individual methods and **integration tests** for testing the complete system. It uses **Docker containers** for integration testing, ensuring that all components are properly tested in isolation and together as part of the integration process.
 
+If you want to run all test cases then need to type this command:
+```bash
+mvn test
+```
 ---

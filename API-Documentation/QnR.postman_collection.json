@@ -1,0 +1,367 @@
+{
+	"info": {
+		"_postman_id": "3401ad69-925a-4b89-baf7-1a2929cf16fa",
+		"name": "QnR",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "472800"
+	},
+	"item": [
+		{
+			"name": "Order",
+			"item": [
+				{
+					"name": "getAllOrders",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJ2aWN0b3IiLCJpYXQiOjE3NDIwNjU0MDksImV4cCI6MTc0MjA3NDQwOX0.v96TCXp7tOoWSYBdlDaVb-UtlwZkZQTD4sT4gnxbHvs",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1.0/order/all",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1.0",
+								"order",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "addNewOrder",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"Sample Order Description\",\n  \"status\": \"PENDING\",\n  \"createDate\": \"2025-03-15T14:30:00\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1.0/order/add",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1.0",
+								"order",
+								"add"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteByBulk",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1.0/order/bulk-delete/{status}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1.0",
+								"order",
+								"bulk-delete",
+								"{status}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "deleteById",
+					"request": {
+						"method": "DELETE",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1.0/order/delete/{orderId}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1.0",
+								"order",
+								"delete",
+								"{orderId}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "updateOrder",
+					"request": {
+						"method": "PUT",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"description\": \"Sample Order Description\",\n  \"status\": \"PENDING\",\n  \"createDate\": \"2025-03-15T14:30:00\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1.0/order/update/{orderId}",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1.0",
+								"order",
+								"update",
+								"{orderId}"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getOrderByStatus",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1.0/order/(status)",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1.0",
+								"order",
+								"(status)"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getOrdersByStatusAndTime",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1.0/order/orders?status=ACTIVE&startDate=2025-01-01T00:00:00&endDate=2025-12-31T23:59:59&page=0&size=10",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1.0",
+								"order",
+								"orders"
+							],
+							"query": [
+								{
+									"key": "status",
+									"value": "ACTIVE"
+								},
+								{
+									"key": "startDate",
+									"value": "2025-01-01T00:00:00"
+								},
+								{
+									"key": "endDate",
+									"value": "2025-12-31T23:59:59"
+								},
+								{
+									"key": "page",
+									"value": "0"
+								},
+								{
+									"key": "size",
+									"value": "10"
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Users",
+			"item": [
+				{
+					"name": "registerNewUser",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"victor\",\n  \"role\": \"USER\",\n  \"password\": \"123\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1.0/user/register",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1.0",
+								"user",
+								"register"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "login",
+					"request": {
+						"auth": {
+							"type": "noauth"
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n  \"username\": \"niki\",\n  \"password\": \"123\"\n}\n",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1.0/user/login",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1.0",
+								"user",
+								"login"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getAllUsers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1.0/user/user/all",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1.0",
+								"user",
+								"user",
+								"all"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "getUserByRoleType",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpIiwiaWF0IjoxNzQyMjM2NzQ4LCJleHAiOjE3NDIyNDU3NDh9.pbv3SzEQg5KUR2lK7x4lLHHP5eguuwmPhrkyiGuC1ig",
+									"type": "string"
+								}
+							]
+						},
+						"method": "GET",
+						"header": [],
+						"url": {
+							"raw": "{{url}}/api/v1.0/user/ADMIN",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1.0",
+								"user",
+								"ADMIN"
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "logout",
+					"request": {
+						"auth": {
+							"type": "bearer",
+							"bearer": [
+								{
+									"key": "token",
+									"value": "eyJhbGciOiJIUzI1NiJ9.eyJzdWIiOiJuaWtpIiwiaWF0IjoxNzQyMjQ1NjEyLCJleHAiOjE3NDIyNTQ2MTJ9.DGVWc0hE0EUalB1rDzVcbCS8sNUY68aiz-3ELv3HDfE",
+									"type": "string"
+								}
+							]
+						},
+						"method": "POST",
+						"header": [],
+						"body": {
+							"mode": "raw",
+							"raw": "",
+							"options": {
+								"raw": {
+									"language": "json"
+								}
+							}
+						},
+						"url": {
+							"raw": "{{url}}/api/v1.0/user/logout",
+							"host": [
+								"{{url}}"
+							],
+							"path": [
+								"api",
+								"v1.0",
+								"user",
+								"logout"
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}
