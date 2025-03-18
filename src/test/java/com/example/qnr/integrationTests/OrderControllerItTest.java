@@ -3,6 +3,7 @@ package com.example.qnr.integrationTests;
 import com.example.qnr.controllers.OrderController;
 import com.example.qnr.dto.OrderDto;
 import com.example.qnr.resources.Order;
+import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule;
 import org.junit.jupiter.api.*;
@@ -20,6 +21,7 @@ import org.testcontainers.junit.jupiter.Testcontainers;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 import static org.hamcrest.Matchers.hasSize;
@@ -254,4 +256,43 @@ public class OrderControllerItTest {
         Assertions.assertEquals(0, completedCount);
     }
 
+    @Test
+    void testGetOrdersByDateRange() throws Exception {
+        String status = "Pending";
+        LocalDateTime startDate = LocalDateTime.now().minusMinutes(10);
+        LocalDateTime endDate = LocalDateTime.now().plusHours(4).plusMinutes(10);
+        int page = 0;
+        int size = 10;
+        String jwtToken = "your-valid-jwt-token";
+
+        MvcResult mvcResult = mockMvc.perform(get("/api/v1.0/order/orders")
+                        .param("status", status)
+                        .param("startDate", startDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                        .param("endDate", endDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                        .param("page", String.valueOf(page))
+                        .param("size", String.valueOf(size))
+                        .header("Authorization", "Bearer " + jwtToken)
+                        .contentType(MediaType.APPLICATION_JSON))
+                .andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content", hasSize(3)))
+                .andExpect(jsonPath("$.content[0].description").value("Order 1 description"))
+                .andExpect(jsonPath("$.content[0].status").value("Pending"))
+                .andExpect(jsonPath("$.content[1].description").value("Order 3 description"))
+                .andExpect(jsonPath("$.content[1].status").value("Pending"))
+                .andExpect(jsonPath("$.content[2].description").value("Order 5 description"))
+                .andExpect(jsonPath("$.content[2].status").value("Pending"))
+                .andReturn();
+
+        String jsonResponse = mvcResult.getResponse().getContentAsString();
+        JsonNode rootNode = objectMapper.readTree(jsonResponse);
+        String contentJson = rootNode.get("content").toString();
+
+        List<OrderDto> orders = objectMapper.readValue(contentJson, objectMapper.getTypeFactory().constructCollectionType(List.class, OrderDto.class));
+
+        assertNotNull(orders);
+        Assertions.assertEquals(3, orders.size());
+        Assertions.assertEquals("Order 1 description", orders.get(0).getDescription());
+        Assertions.assertEquals("Pending", orders.get(0).getStatus());
+    }
 }

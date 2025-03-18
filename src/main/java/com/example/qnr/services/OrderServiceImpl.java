@@ -13,7 +13,11 @@ import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.cache.annotation.CachePut;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -123,4 +127,33 @@ public class OrderServiceImpl implements OrderService {
     public int bulkDeleteOrdersByStatus(String status) {
         return orderRepository.deleteOrdersByStatus(status);
     }
+
+    /**
+     * Retrieves a paginated and filtered list of orders based on the given filters.
+     * This method validates that the provided filter parameters are not null or empty.
+     *
+     * @param status     The status to filter orders by (must not be null or empty).
+     * @param startDate  The start date to filter orders (must not be null).
+     * @param endDate    The end date to filter orders (must not be null).
+     * @param page       The page number (starting from 0).
+     * @param size       The page size.
+     * @return A paginated list of orders matching the filters.
+     * @throws IllegalArgumentException if any of the parameters are null or invalid.
+     */
+    public Page<OrderDto> getFilteredOrders(String status, LocalDateTime startDate, LocalDateTime endDate, int page, int size) {
+        if (status == null || status.isEmpty()) {
+            throw new IllegalArgumentException("Status must not be null or empty.");
+        }
+        if (startDate == null) {
+            throw new IllegalArgumentException("Start date must not be null.");
+        }
+        if (endDate == null) {
+            throw new IllegalArgumentException("End date must not be null.");
+        }
+
+        Pageable pageable = PageRequest.of(page, size);
+        return orderRepository.findOrdersWithFilters(status, startDate, endDate, pageable)
+                .map(orderMapper::toOrderDto);
+    }
+
 }

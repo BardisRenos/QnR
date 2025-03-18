@@ -10,17 +10,22 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class OrderServiceImplTest {
@@ -33,9 +38,19 @@ public class OrderServiceImplTest {
     @Mock
     private OrderMapper orderMapper;
 
+    private Order order;
+    private OrderDto orderDto;
+    private LocalDateTime startDate;
+    private LocalDateTime endDate;
+
     @BeforeEach
     void setUp() {
         orderService = new OrderServiceImpl(orderRepository, orderMapper);
+
+        order = new Order(1, "Test Order", "PENDING", LocalDateTime.now());
+        orderDto = new OrderDto("Test Order", "PENDING", order.getCreateDate());
+        startDate = LocalDateTime.of(2024, 1, 1, 0, 0);
+        endDate = LocalDateTime.of(2024, 12, 31, 23, 59);
     }
 
     @Test
@@ -179,4 +194,53 @@ public class OrderServiceImplTest {
         verify(orderRepository).deleteOrdersByStatus(status);
     }
 
+    @Test
+    void testGetFilteredOrders_Success() {
+        Pageable pageable = PageRequest.of(0, 10);
+        Page<Order> orderPage = new PageImpl<>(Collections.singletonList(order), pageable, 1);
+
+        when(orderRepository.findOrdersWithFilters("PENDING", startDate, endDate, pageable)).thenReturn(orderPage);
+        when(orderMapper.toOrderDto(order)).thenReturn(orderDto);
+
+        Page<OrderDto> result = orderService.getFilteredOrders("PENDING", startDate, endDate, 0, 10);
+
+        assertNotNull(result);
+        assertEquals(1, result.getTotalElements());
+        assertEquals("Test Order", result.getContent().get(0).getDescription());
+
+        verify(orderRepository, times(1)).findOrdersWithFilters("PENDING", startDate, endDate, pageable);
+        verify(orderMapper, times(1)).toOrderDto(order);
+    }
+
+    @Test
+    void testGetFilteredOrders_NullStatus_ThrowsException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                orderService.getFilteredOrders(null, startDate, endDate, 0, 10));
+
+        assertEquals("Status must not be null or empty.", exception.getMessage());
+    }
+
+    @Test
+    void testGetFilteredOrders_EmptyStatus_ThrowsException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                orderService.getFilteredOrders("", startDate, endDate, 0, 10));
+
+        assertEquals("Status must not be null or empty.", exception.getMessage());
+    }
+
+    @Test
+    void testGetFilteredOrders_NullStartDate_ThrowsException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                orderService.getFilteredOrders("ACTIVE", null, endDate, 0, 10));
+
+        assertEquals("Start date must not be null.", exception.getMessage());
+    }
+
+    @Test
+    void testGetFilteredOrders_NullEndDate_ThrowsException() {
+        IllegalArgumentException exception = assertThrows(IllegalArgumentException.class, () ->
+                orderService.getFilteredOrders("ACTIVE", startDate, null, 0, 10));
+
+        assertEquals("End date must not be null.", exception.getMessage());
+    }
 }

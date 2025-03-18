@@ -11,6 +11,9 @@ import org.junit.jupiter.api.Test;
 import org.mockito.InjectMocks;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
@@ -19,7 +22,9 @@ import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.springframework.web.context.WebApplicationContext;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.hamcrest.Matchers.is;
@@ -167,5 +172,34 @@ class OrderControllerTest {
                 .andExpect(content().string("5 orders deleted successfully."));
 
         verify(orderService, times(1)).bulkDeleteOrdersByStatus(status);
+    }
+
+
+    @Test
+    public void testGetOrdersWithFilters() throws Exception {
+        String status = "ACTIVE";
+        LocalDateTime startDate = LocalDateTime.of(2025, 1, 1, 0, 0);
+        LocalDateTime endDate = LocalDateTime.of(2025, 12, 31, 23, 59);
+        int page = 0;
+        int size = 10;
+
+        String jwtToken = "your-valid-jwt-token";
+
+        OrderDto orderDto = new OrderDto("Test Order", "PENDING", startDate);
+        Page<OrderDto> pageResult = new PageImpl<>(Collections.singletonList(orderDto), PageRequest.of(page, size), 1);
+
+        when(orderService.getFilteredOrders(status, startDate, endDate, page, size)).thenReturn(pageResult);
+
+        mockMvc.perform(get("/api/v1.0/order/orders")
+                .param("status", status)
+                .param("startDate", startDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .param("endDate", endDate.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME))
+                .param("page", String.valueOf(page))
+                .param("size", String.valueOf(size))
+                .header("Authorization", "Bearer " + jwtToken)
+                .contentType(MediaType.APPLICATION_JSON))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.content[0].description").value("Test Order"))
+                .andExpect(jsonPath("$.content[0].status").value("PENDING"));
     }
 }
