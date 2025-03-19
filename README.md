@@ -92,7 +92,7 @@ docker exec -it postgres psql -U postgres -d mydatabase
 If there is a need to run only the postgresSql database then first starts the database only:
 
 ```bash
-start_progres.sh
+start_postgres.sh
 ```
 
 To check the databases need to type :
