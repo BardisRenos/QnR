@@ -3,8 +3,8 @@ package com.example.qnr.services;
 import com.example.qnr.dto.UserDto;
 import com.example.qnr.dto.UserDtoNoPass;
 import com.example.qnr.exception.NotFoundException;
-import com.example.qnr.security.entities.AuthRequest;
-import com.example.qnr.security.entities.AuthResponse;
+import com.example.qnr.security.auth.AuthRequest;
+import com.example.qnr.security.auth.AuthResponse;
 
 import java.util.List;
 

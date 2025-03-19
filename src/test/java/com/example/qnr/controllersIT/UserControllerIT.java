@@ -3,7 +3,7 @@ package com.example.qnr.controllersIT;
 import com.example.qnr.controllers.UserController;
 import com.example.qnr.dto.UserDto;
 import com.example.qnr.resources.enums.UserRole;
-import com.example.qnr.security.entities.AuthRequest;
+import com.example.qnr.security.auth.AuthRequest;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.junit.jupiter.api.*;
 import org.springframework.beans.factory.annotation.Autowired;
