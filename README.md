@@ -240,7 +240,7 @@ from the top right the Environments drop down list.
 There is a folder **API-Documentation** which has 3 .json files. Need to import into Postman in order to test the application.
 
 ---
-### 7. Advanced Query with filter and Pagination
+### 7. Advanced Query with Filter and Pagination
 The custom query retrieves Order entities with filtering and pagination support.
 It allows filtering by status and create date, and supports pagination.
 If no pagination parameters are provided, it defaults to page 0 and page size 10.
@@ -294,4 +294,8 @@ mvn verify -P integration-tests
 ---
 ### 12. Test Coverage
 
-There is an option to check the coverage of the source code is covered. By running in Intellij run by coverage.
+There is an option to check whether the source code is covered by running in Intellij run by coverage.
+
+<p align="center"> 
+<img src="https://github.com/BardisRenos/QnR/blob/main/images/coverageTest.png" width="1150" height="450" style=centerme>
+</p>
