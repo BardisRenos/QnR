@@ -232,8 +232,8 @@ API endpoints are available in the **endpoints** folder, along with a Postman co
 
 There are 7 end points for the Order and 5 end point for the Users.
 
-The local url is saved as {{url}} and the docker url is saved as {{docker_url}}. Just is needed to choose in Postman 
-from the top right the Environments drop down list.
+The local URL is saved as {{url}} and the docker URL is saved as {{docker_url}}. Just as needed to choose in Postman 
+from the top right of the Environments drop-down list.
 - **Local URL:** `http://localhost:8088`
 - **Docker URL:** `http://localhost:9088`
 
@@ -242,7 +242,7 @@ There is a folder **API-Documentation** which has 3 .json files. Need to import 
 ---
 ### 7. Advanced Query with Filter and Pagination
 The custom query retrieves Order entities with filtering and pagination support.
-It allows filtering by status and create date, and supports pagination.
+It allows filtering by status and creation date and supports pagination.
 If no pagination parameters are provided, it defaults to page 0 and page size 10.
 
 ---
@@ -256,12 +256,20 @@ The system ensures that the `OrderDto` and `UserDtoNoPass` are *NotBlank*. These
 ### 9. Security
 
 The application leverages **Spring Security** with **JWT** (JSON Web Tokens) for user authentication and authorization.
-Also, another worth mentioning the application register a new **User** then the password is saved into the users database table in BCryptPasswordEncoder with 10 rounds of encryption.
+Also, another worth mentioning the application registers a new **User** then the password is saved into the users database table in BCryptPasswordEncoder with 10 rounds of encryption.
 
 1. Users are authenticated by checking their credentials in the database.
 2. After successful authentication, a JWT token is returned.
 3. This token is used for subsequent requests to authenticate API calls.
-4. The given token is applied into the Authorization option in Postman by choosing the Type as Bearer Token option.
+4. The given token is applied to the Authorization option in Postman by choosing the Type as Bearer Token option.
+
+Another worth mentioning is that each time the application registers a new user, the password stored in the database in hashed form.
+
+As an example:
+
+`
+    5	Sarah	ADMIN	$2a$10$JG9f5YabkmfZT.f4mnz/Xz0Iu3fSBPLT2qZqZTqaNr7g91hml09Eq
+`
 
 ---
 
