@@ -1,6 +1,7 @@
-package com.example.qnr.security.entities;
+package com.example.qnr.security.auth;
 
 import com.example.qnr.resources.Users;
+import com.example.qnr.security.UserPrincipal;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;

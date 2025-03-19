@@ -1,7 +1,7 @@
 package com.example.qnr.services;
 
 import com.example.qnr.dao.UserRepository;
-import com.example.qnr.security.entities.UserPrincipal;
+import com.example.qnr.security.UserPrincipal;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

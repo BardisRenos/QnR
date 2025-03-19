@@ -1,7 +1,6 @@
 package com.example.qnr.security;
 
 import com.example.qnr.resources.Users;
-import com.example.qnr.security.entities.UserPrincipal;
 import com.example.qnr.services.CustomUserDetailsService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.example.qnr.security.entities;
+package com.example.qnr.security.auth;
 
 import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;

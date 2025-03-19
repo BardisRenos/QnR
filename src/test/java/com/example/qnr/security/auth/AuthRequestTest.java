@@ -1,4 +1,4 @@
-package com.example.qnr.security.entities;
+package com.example.qnr.security.auth;
 
 import org.junit.jupiter.api.Test;
 
