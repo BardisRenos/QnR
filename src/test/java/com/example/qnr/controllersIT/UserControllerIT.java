@@ -34,7 +34,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
         "spring.session.store-type=none"
 })
 @Testcontainers
-public class UserControllerItTest {
+public class UserControllerIT {
 
     private static final PostgreSQLContainer<?> postgresContainer = new PostgreSQLContainer<>("postgres:latest");
 

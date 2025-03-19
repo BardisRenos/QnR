@@ -51,7 +51,7 @@ services:
       - "5432:5432"
     volumes:
       - postgres-data:/var/lib/postgresql/data
-      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - /home/renos/Downloads/QnRProject/qnr/init-scripts:/docker-entrypoint-initdb.d/
     networks:
       - springboot-net
 
