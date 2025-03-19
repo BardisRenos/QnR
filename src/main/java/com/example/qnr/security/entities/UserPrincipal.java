@@ -28,7 +28,8 @@ public class UserPrincipal implements UserDetails {
      */
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        return List.of(new SimpleGrantedAuthority("USER"));
+        String role = "ROLE_" + user.getRole().toUpperCase();
+        return List.of(new SimpleGrantedAuthority(role));
     }
 
     /**

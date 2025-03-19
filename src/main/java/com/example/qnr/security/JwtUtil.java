@@ -1,9 +1,11 @@
 package com.example.qnr.security;
 
+import com.example.qnr.services.CustomUserDetailsService;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
+import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -16,6 +18,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
+import java.util.stream.Collectors;
 
 /**
  * Utility class for handling JWT (JSON Web Token) operations.
@@ -26,6 +29,12 @@ import java.util.function.Function;
  */
 @Component
 public class JwtUtil {
+
+    /**
+     * The service used to load user details by username.
+     * This service is used for fetching user authorities and other details for generating the JWT token.
+     */
+    private final CustomUserDetailsService userDetailsService;
 
     /**
      * The secret key used for signing and validating the JWT token.
@@ -44,7 +53,8 @@ public class JwtUtil {
      *
      * @param securityProperties the configuration properties containing JWT-related settings.
      */
-    public JwtUtil(SecurityProperties securityProperties) {
+    public JwtUtil(CustomUserDetailsService userDetailsService, SecurityProperties securityProperties) {
+        this.userDetailsService = userDetailsService;
         this.securityConfig = securityProperties;
 
         try {
@@ -68,6 +78,12 @@ public class JwtUtil {
      */
     public String generateToken(String username) {
         Map<String, Object> claims = new HashMap<>();
+
+        var users = userDetailsService.loadUserByUsername(username);
+        claims.put("roles", users.getAuthorities().stream()
+                .map(GrantedAuthority::getAuthority)
+                .collect(Collectors.toList()));
+
         return Jwts.builder()
                 .setClaims(claims)
                 .setSubject(username)

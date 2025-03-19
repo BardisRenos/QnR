@@ -18,7 +18,7 @@ import org.springframework.test.web.servlet.MvcResult;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
 import org.testcontainers.containers.PostgreSQLContainer;
 import org.testcontainers.junit.jupiter.Testcontainers;
-
+import org.springframework.security.test.context.support.WithMockUser;
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -207,6 +207,7 @@ public class OrderControllerIT {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deleteOrder_ShouldDeleteOrder_WhenOrderExists() throws Exception {
         String url = "/api/v1.0/order/delete/1";
         MvcResult mvcResult = mockMvc.perform(delete(url)
@@ -225,6 +226,7 @@ public class OrderControllerIT {
     }
 
     @Test
+    @WithMockUser(username = "admin", roles = {"ADMIN"})
     void deleteOrder_ShouldReturnNotFound_WhenOrderDoesNotExist() throws Exception {
         String url = "/api/v1.0/order/delete/999";
 

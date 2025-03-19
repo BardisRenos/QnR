@@ -95,7 +95,7 @@ public class UserControllerIT {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(3)))  // Adjust based on inserted test data
+                .andExpect(jsonPath("$.size()", is(3)))
                 .andReturn();
 
         String jsonResponse = mvcResult.getResponse().getContentAsString();
@@ -111,7 +111,7 @@ public class UserControllerIT {
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk())
-                .andExpect(jsonPath("$.size()", is(2)))  // Adjust based on inserted test data
+                .andExpect(jsonPath("$.size()", is(2)))
                 .andReturn();
 
         String jsonResponse = mvcResult.getResponse().getContentAsString();

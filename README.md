@@ -42,6 +42,7 @@ for performance optimization**, and **RESTful APIs** for seamless interaction wi
 ### User Authentication & Security
 - Users can **register**, **log in**, and access the system securely.
 - Implements **JWT-based authentication** to protect endpoints.
+- Implements access control based on user roles for the endpoints.
 
 ### Order Management
 - Users can **create**, **update**, **delete**, and **fetch** orders.
@@ -107,6 +108,13 @@ Finally, to see the db tables then type:
 \dt
 ```
 
+#### Step 3: Create Database Tables and Insert Data
+
+When the postgres container is up the  `- /home/renos/Downloads/QnRProject/qnr/init-scripts:/docker-entrypoint-initdb.d/`
+indicates that container reads from the folder **init-scripts** and execute files with **.sql**.
+This script will create the necessary tables, indexes, and insert sample data into the database.
+
+
 ---
 
 ## Database Schema
@@ -147,14 +155,6 @@ CREATE TABLE users (
 CREATE INDEX idx_users_role ON users (role);
 
 ```
-
----
-
-#### Step 3: Create Database Tables and Insert Data
-
-When the postgres container is up the  `- /home/renos/Downloads/QnRProject/qnr/init-scripts:/docker-entrypoint-initdb.d/`
-indicates that container reads from the folder **init-scripts** and execute files with **.sql**.
-This script will create the necessary tables, indexes, and insert sample data into the database.
 
 ---
 
@@ -263,13 +263,20 @@ Also, another worth mentioning the application registers a new **User** then the
 3. This token is used for subsequent requests to authenticate API calls.
 4. The given token is applied to the Authorization option in Postman by choosing the Type as Bearer Token option.
 
-Another worth mentioning is that each time the application registers a new user, the password stored in the database in hashed form.
+Another important aspect of the application is the security of user credentials. Each time a new user registers, their password is stored securely in the database as a hashed value, ensuring sensitive information is not stored in plaintext.
 
-As an example:
+For example, a user's password would be hashed using BCrypt and stored as follows:
 
 `
     5	Sarah	ADMIN	$2a$10$JG9f5YabkmfZT.f4mnz/Xz0Iu3fSBPLT2qZqZTqaNr7g91hml09Eq
 `
+
+This hashed value is the result of the BCrypt hashing algorithm, which ensures that even if the database is compromised, 
+passwords remain secure and cannot be easily decrypted.
+
+Additionally, the application enforces security on its REST endpoints. For instance, 
+the DELETE endpoint for orders (http://localhost:8088/api/v1.0/order/delete/2) is restricted to users with the ADMIN role. 
+This ensures that only authorized users can perform critical operations of the system.
 
 ---
 

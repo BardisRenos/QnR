@@ -30,10 +30,14 @@ class UserPrincipalTest {
 
     @Test
     void getAuthorities_ShouldReturnAuthorities_WhenCalled() {
+        when(mockUser.getRole()).thenReturn("USER");
+
         Collection<? extends GrantedAuthority> authorities = userPrincipalUnderTest.getAuthorities();
+        authorities.forEach(authority -> System.out.println("Authority: " + authority.getAuthority()));
+
         assertNotNull(authorities);
         assertEquals(1, authorities.size());
-        assertTrue(authorities.contains(new SimpleGrantedAuthority("USER")));
+        assertTrue(authorities.contains(new SimpleGrantedAuthority("ROLE_USER")));
     }
 
     @Test
