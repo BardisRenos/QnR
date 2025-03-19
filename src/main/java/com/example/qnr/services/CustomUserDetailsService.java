@@ -20,8 +20,6 @@ import java.util.Set;
 public class CustomUserDetailsService implements UserDetailsService {
 
     private final UserRepository userRepository;
-
-    // A set to store blacklisted JWT tokens (e.g., for logout functionality).
     private final Set<String> blacklistedTokens = new HashSet<>();
 
     /**
@@ -34,11 +32,9 @@ public class CustomUserDetailsService implements UserDetailsService {
      */
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        // Fetch the user from the repository by username
         var user = userRepository.findByUsername(username).orElseThrow(() ->
                 new UsernameNotFoundException("User not found"));
 
-        // Return a custom UserPrincipal object containing user details
         return new UserPrincipal(user);
     }
 
