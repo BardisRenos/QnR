@@ -42,7 +42,7 @@ for performance optimization**, and **RESTful APIs** for seamless interaction wi
 ### User Authentication & Security
 - Users can **register**, **log in**, and access the system securely.
 - Implements **JWT-based authentication** to protect endpoints.
-- Implements access control based on user roles for the endpoints.
+- Access control is implemented based on user roles for the endpoints.
 
 ### Order Management
 - Users can **create**, **update**, **delete**, and **fetch** orders.
@@ -142,7 +142,7 @@ CREATE INDEX idx_orders_order_id ON orders (order_id);
 #### Users Table
 The users table stores information about the users in the system. 
 Each user is assigned a user_id and has a username, role (such as "Admin" or "User"), 
-and password which is stored securely.
+and password, which is stored securely.
 
 ```sql
 CREATE TABLE users (
