@@ -12,6 +12,12 @@ done
 echo "Removing specific volume: $VOLUME_NAME..."
 docker volume rm $VOLUME_NAME 2>/dev/null || echo "Volume $VOLUME_NAME not found or already removed."
 
+echo "Build new jar...."
+mvn clean install
+
+echo "Build the Docker image...."
+docker-compose build
+
 echo "Starting Docker Compose services..."
 docker-compose -f $COMPOSE_FILE up -d
 

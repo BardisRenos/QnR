@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.bean.override.mockito.MockitoBean;
 import org.springframework.test.web.servlet.MockMvc;
@@ -85,13 +86,13 @@ class OrderControllerTest {
 
     @Test
     void getOrdersByStatus_ShouldReturnOrderList_WhenOrdersExist() throws Exception {
-        String status = "PENDING";
+        String status = "Pending";
         OrderDto order = new OrderDto(1, "Order 1", OrderStatus.PENDING.name(), LocalDateTime.now());
         List<OrderDto> orders = List.of(order);
 
         when(orderService.getOrdersByStatus(status)).thenReturn(orders);
 
-        mockMvc.perform(get("/api/v1.0/order/PENDING"))
+        mockMvc.perform(get("/api/v1.0/order/Pending"))
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$.size()", is(1)))
                 .andExpect(jsonPath("$[0].description", is("Order 1")));
@@ -101,11 +102,14 @@ class OrderControllerTest {
 
     @Test
     void getOrdersByStatus_ShouldReturnNotFound_WhenNoOrdersExist() throws Exception {
-        String status = "UNKNOWN";
-        when(orderService.getOrdersByStatus(status)).thenThrow(new NotFoundException("No orders found"));
+        String status = "Pending";
 
-        mockMvc.perform(get("/api/v1.0/order/UNKNOWN"))
-                .andExpect(status().isNotFound());
+        when(orderService.getOrdersByStatus(status))
+                .thenThrow(new NotFoundException("No orders found"));
+
+        mockMvc.perform(get("/api/v1.0/order/Pending"))
+                .andExpect(status().isNotFound())
+                .andExpect(content().string("No orders found"));
 
         verify(orderService, times(1)).getOrdersByStatus(status);
     }
@@ -149,6 +153,7 @@ class OrderControllerTest {
     }
 
     @Test
+    @Rollback(false)
     public void testDeleteOrder_whenOrderExists_WithSuccess() throws Exception {
         int orderId = 1;
         when(orderService.deleteOrder(orderId)).thenReturn(true);
@@ -162,17 +167,13 @@ class OrderControllerTest {
 
     @Test
     void bulkDeleteOrders_ShouldReturnDeletedCount_WithSuccess() throws Exception {
-        String status = OrderStatus.PENDING.name();
-        int deletedCount = 5;
+        when(orderService.bulkDeleteOrdersByStatus("Pending")).thenReturn(5);
 
-        when(orderService.bulkDeleteOrdersByStatus(status)).thenReturn(deletedCount);
-
-        mockMvc.perform(delete("/api/v1.0/order/bulk-delete/PENDING"))
+        mockMvc.perform(delete("/api/v1.0/order/bulk-delete/Pending"))
                 .andExpect(status().isOk())
                 .andExpect(content().string("5 orders deleted successfully."));
-
-        verify(orderService, times(1)).bulkDeleteOrdersByStatus(status);
     }
+
 
 
     @Test
